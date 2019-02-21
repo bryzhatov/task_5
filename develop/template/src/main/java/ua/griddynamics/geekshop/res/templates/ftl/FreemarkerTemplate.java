@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
+import ua.griddynamics.geekshop.res.templates.exception.TemplateEngineException;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,7 +23,7 @@ public class FreemarkerTemplate implements TemplateEngine {
     }
 
     @Override
-    public String render(String fileName, Object pageValue) {
+    public synchronized String render(String fileName, Object pageValue) throws TemplateEngineException {
         try {
             writer.getBuffer().replace(0, writer.getBuffer().length(), "");
 
@@ -31,8 +32,7 @@ public class FreemarkerTemplate implements TemplateEngine {
 
             return writer.toString();
         } catch (IOException | TemplateException e) {
-            e.printStackTrace();
+            throw new TemplateEngineException("Can't render template", e);
         }
-        return null;
     }
 }

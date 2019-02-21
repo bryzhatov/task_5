@@ -1,5 +1,6 @@
 package ua.griddynamics.geekshop.controllers;
 
+import freemarker.template.TemplateException;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.exception.ServiceException;
@@ -32,7 +33,7 @@ public class PageController {
                     singletonMap("categories", categoryService.getCategories())
             );
             response.getWriter().write(page);
-        } catch (ServiceException e) {
+        } catch (TemplateException | ServiceException e) {
             log.error(e);
         }
     }

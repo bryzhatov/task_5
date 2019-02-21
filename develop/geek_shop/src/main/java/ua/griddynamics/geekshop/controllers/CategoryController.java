@@ -34,6 +34,7 @@ public class CategoryController {
     public void getMainCategories(HttpRequest request, HttpResponse response) {
         Gson gson = new Gson();
         try {
+
             String jsonCategory = gson.toJson(categoryService.getMainCategories());
             response.getWriter().write(jsonCategory);
 
