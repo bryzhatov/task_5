@@ -1,9 +1,10 @@
 package ua.griddynamics.geekshop.controllers;
 
 import com.google.gson.Gson;
+import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.exception.ServiceException;
-import ua.griddynamics.geekshop.repository.RepositoryFacade;
 import ua.griddynamics.geekshop.service.CategoryService;
+import ua.griddynamics.geekshop.service.facade.ServiceFacade;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 
@@ -11,11 +12,12 @@ import ua.griddynamics.httpserver.api.HttpResponse;
  * @author Dmitry Bryzhatov
  * @since 2019-02-21
  */
+@Log4j
 public class CategoryController {
-    private final CategoryService categoryService;
+    private CategoryService categoryService;
 
-    public CategoryController(RepositoryFacade repositoryFacade) {
-        categoryService = new CategoryService(repositoryFacade);
+    public CategoryController(ServiceFacade serviceFacade) {
+        categoryService = serviceFacade.getCategoryService();
     }
 
     public void getCategories(HttpRequest request, HttpResponse response) {
@@ -25,7 +27,7 @@ public class CategoryController {
             response.getWriter().write(jsonCategory);
 
         } catch (ServiceException e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -36,7 +38,7 @@ public class CategoryController {
             response.getWriter().write(jsonCategory);
 
         } catch (ServiceException e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 }

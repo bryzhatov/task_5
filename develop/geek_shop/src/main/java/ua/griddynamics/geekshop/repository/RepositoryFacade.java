@@ -1,7 +1,7 @@
 package ua.griddynamics.geekshop.repository;
 
+import lombok.Getter;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
-import ua.griddynamics.geekshop.repository.postgres.PostgresConnection;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.CategoryPostgresRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnection;
 
@@ -10,11 +10,11 @@ import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnection;
  * @since 2019-02-20
  */
 public class RepositoryFacade {
-    private final PostgresConnection postgresConnection = new GeekShopConnection();
-    private final CategoryPostgresRepository categoryPostgresRepository
-            = new CategoryPostgresRepository(postgresConnection);
+    @Getter
+    private final CategoryRepository categoryPostgresRepository;
 
-    public CategoryRepository getCategoryPostgres(){
-        return categoryPostgresRepository;
+    public RepositoryFacade(ConnectionFacade facade) {
+        GeekShopConnection geekShopConnection = facade.getGeekShopConnection();
+        categoryPostgresRepository = new CategoryPostgresRepository(geekShopConnection::getConnection);
     }
 }

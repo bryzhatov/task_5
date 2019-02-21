@@ -1,9 +1,9 @@
 package ua.griddynamics.geekshop.service;
 
+import lombok.Setter;
 import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.exception.ServiceException;
-import ua.griddynamics.geekshop.repository.RepositoryFacade;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 
 import java.util.List;
@@ -13,17 +13,18 @@ import java.util.List;
  * @since 2019-02-20
  */
 public class CategoryService {
-    private final CategoryRepository categoryRepository;
+    @Setter
+    private CategoryRepository categoryRepository;
 
-    public CategoryService(RepositoryFacade repositoryFacade) {
-        categoryRepository = repositoryFacade.getCategoryPostgres();
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 
     public List<Category> getMainCategories() throws ServiceException {
         try {
             return categoryRepository.getMainCategories();
         } catch (DataBaseException e) {
-            throw new ServiceException("Can't get main categories: " + e);
+            throw new ServiceException("Can't get main categories", e);
         }
     }
 
@@ -31,7 +32,7 @@ public class CategoryService {
         try {
             return categoryRepository.getCategories();
         } catch (DataBaseException e) {
-            throw new ServiceException("Can't get all categories: " + e);
+            throw new ServiceException("Can't get all categories", e);
         }
     }
 }

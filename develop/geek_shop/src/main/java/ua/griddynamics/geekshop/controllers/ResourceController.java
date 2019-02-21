@@ -26,7 +26,7 @@ public class ResourceController {
 
             response.getWriter().write(new String(Files.readAllBytes(path)));
         } catch (URISyntaxException | IOException e) {
-            log.error("Can't load web/in.css:" + e);
+            log.error("Can't load web/in.css: " + e);
         }
     }
 }

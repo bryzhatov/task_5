@@ -3,8 +3,8 @@ package ua.griddynamics.geekshop.repository.postgres.geekshop;
 import lombok.extern.log4j.Log4j;
 import org.postgresql.ds.PGConnectionPoolDataSource;
 import ua.griddynamics.geekshop.exception.DataBaseException;
-import ua.griddynamics.geekshop.repository.postgres.PostgresConnection;
 
+import javax.sql.PooledConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -16,31 +16,39 @@ import java.util.Properties;
  * @since 2019-02-20
  */
 @Log4j
-public class GeekShopConnection implements PostgresConnection {
-    private final PGConnectionPoolDataSource dataSource = new PGConnectionPoolDataSource();
+public class GeekShopConnection {
+    private final PooledConnection pooledConnection;
 
-    public GeekShopConnection() {
-        initDataSource(getProperties("app/geek_shop_db.properties"));
+    public GeekShopConnection(String path) {
+        pooledConnection = getPooledConnection(getProperties(path));
     }
 
     public GeekShopConnection(Properties properties) {
-        initDataSource(properties);
+        pooledConnection = getPooledConnection(properties);
     }
 
-    @Override
-    public Connection getConnection() throws DataBaseException {
+    public Connection getConnection() {
         try {
-            return dataSource.getPooledConnection().getConnection();
+            return pooledConnection.getConnection();
         } catch (SQLException e) {
-            throw new DataBaseException(e.getMessage());
+            throw new DataBaseException(e.getMessage(), e);
         }
     }
 
-    private void initDataSource(Properties properties) {
-        dataSource.setDatabaseName(properties.getProperty("name"));
-        dataSource.setUser(properties.getProperty("user"));
-        dataSource.setPassword(properties.getProperty("password"));
-        dataSource.setPortNumber(Integer.parseInt(properties.getProperty("port")));
+    private PooledConnection getPooledConnection(Properties properties) {
+        PooledConnection pooledConnection = null;
+        try {
+
+            PGConnectionPoolDataSource dataSource = new PGConnectionPoolDataSource();
+            dataSource.setDatabaseName(properties.getProperty("name"));
+            dataSource.setUser(properties.getProperty("user"));
+            dataSource.setPassword(properties.getProperty("password"));
+            dataSource.setPortNumber(Integer.parseInt(properties.getProperty("port")));
+            pooledConnection = dataSource.getPooledConnection();
+        } catch (SQLException e) {
+            log.error("Can't get pooled of connections: " + e);
+        }
+        return pooledConnection;
     }
 
     private Properties getProperties(String name) {
