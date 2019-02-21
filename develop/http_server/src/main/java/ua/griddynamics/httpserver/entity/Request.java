@@ -1,0 +1,75 @@
+package ua.griddynamics.httpserver.entity;
+
+import lombok.Data;
+import ua.griddynamics.httpserver.api.HttpRequest;
+import ua.griddynamics.httpserver.utils.RequestUtil;
+
+import java.io.*;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @author Dmitry Bryzhatov
+ * @since 2019-02-12
+ */
+@Data
+public class Request implements HttpRequest {
+    private final Map<String, String> parametersUrl = new HashMap<>();
+    private final Map<String, String> headers = new HashMap<>();
+    private final BufferedReader readerStream;
+    private final BufferedWriter writerStream;
+    private final Socket connection;
+    private String location;
+    private String method;
+    private byte[] body;
+    private String url;
+
+    public Request(Socket connection) throws IOException {
+        this.connection = connection;
+        this.readerStream = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        this.writerStream = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+    }
+
+    public boolean isCorrect() {
+        return url != null && url.matches("/[A-z0-9$#=,+*@!'%&~:_/\\.\\[\\]\\(\\)]*")
+                && method != null && RequestUtil.isMethodExist(method);
+    }
+
+    public boolean isKeepAlive() {
+        String value = headers.get("Connection");
+        return value != null && value.equalsIgnoreCase("keep-alive");
+    }
+
+    public boolean isClose() {
+        String value = headers.get("Connection");
+        return value != null && value.equalsIgnoreCase("close");
+    }
+
+    @Override
+    public String getParameter(String key) {
+        return parametersUrl.get(key);
+    }
+
+    public void addParameter(String key, String value) {
+        parametersUrl.put(key, value);
+    }
+
+    @Override
+    public String getHeader(String name) {
+        return headers.get(name);
+    }
+
+    public void addHeader(String key, String value) {
+        headers.put(key, value);
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+        this.location = "http:/" + connection.getLocalSocketAddress() + url;
+    }
+
+    public void setMethod() {
+        this.method = method.toUpperCase();
+    }
+}
