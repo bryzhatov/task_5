@@ -15,7 +15,6 @@ import java.io.StringWriter;
  */
 public class FreemarkerTemplate implements TemplateEngine {
     private final Configuration cfg = new Configuration(Configuration.VERSION_2_3_28);
-    private final StringWriter writer = new StringWriter();
 
     public FreemarkerTemplate(String templatePath) {
         cfg.setClassForTemplateLoading(getClass(), templatePath);
@@ -23,8 +22,10 @@ public class FreemarkerTemplate implements TemplateEngine {
     }
 
     @Override
-    public synchronized String render(String fileName, Object pageValue) throws TemplateEngineException {
+    public String render(String fileName, Object pageValue) throws TemplateEngineException {
         try {
+            StringWriter writer = new StringWriter();
+
             writer.getBuffer().replace(0, writer.getBuffer().length(), "");
 
             Template templateEngine = cfg.getTemplate(fileName);
