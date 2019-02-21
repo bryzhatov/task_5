@@ -2,13 +2,9 @@ package ua.griddynamics.geekshop.repository.postgres.geekshop;
 
 import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.exception.DataBaseException;
-import ua.griddynamics.geekshop.repository.DtoUtils;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -30,6 +26,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
 
             try (PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO \"category\" (name) VALUES (?) RETURNING id")) {
+
                 statement.setString(1, category.getName());
 
                 try (ResultSet resultSet = statement.executeQuery()) {
@@ -56,7 +53,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
                 try (ResultSet resultSet = statement.executeQuery()) {
 
                     if (resultSet != null && resultSet.next()) {
-                        return DtoUtils.getCategory(resultSet);
+                        return categoryMapper(resultSet);
                     }
                 }
             }
@@ -87,8 +84,6 @@ public class CategoryPostgresRepository implements CategoryRepository {
 
             try (PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM \"category\" WHERE id = ?")) {
-
-                statement.setInt(1, id);
                 return statement.executeUpdate() == 1;
             }
         } catch (SQLException e) {
@@ -107,7 +102,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
 
                 if (resultSet != null) {
                     while (resultSet.next()) {
-                        Category category = DtoUtils.getCategory(resultSet);
+                        Category category = categoryMapper(resultSet);
                         categories.add(category);
                     }
                     return categories;
@@ -130,7 +125,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
 
                 if (resultSet != null) {
                     while (resultSet.next()) {
-                        Category category = DtoUtils.getCategory(resultSet);
+                        Category category = categoryMapper(resultSet);
                         categories.add(category);
                     }
                     return categories;
@@ -140,5 +135,13 @@ public class CategoryPostgresRepository implements CategoryRepository {
             throw new DataBaseException(e.getMessage(), e);
         }
         return categories;
+    }
+
+    private Category categoryMapper(ResultSet resultSet) throws SQLException {
+        Category category = new Category();
+        category.setId(resultSet.getInt("id"));
+        category.setParentId(resultSet.getInt("parent_id"));
+        category.setName(resultSet.getString("name"));
+        return category;
     }
 }

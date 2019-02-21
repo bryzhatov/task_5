@@ -19,9 +19,7 @@ import java.io.IOException;
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        ConnectionFacade connectionFacade = new ConnectionFacade();
-        RepositoryFacade repositoryFacade = new RepositoryFacade(connectionFacade);
-        ServiceFacade serviceFacade = new ServiceFacade(repositoryFacade);
+        ServiceFacade serviceFacade = new ServiceFacade(new RepositoryFacade(new ConnectionFacade()));
 
         PageController pageController = new PageController(serviceFacade,
                 new FreemarkerTemplate("/web"));
