@@ -18,10 +18,6 @@ import java.util.Properties;
 public class GeekShopConnection {
     private final PooledConnection pooledConnection;
 
-    public GeekShopConnection(String path) {
-        pooledConnection = getPooledConnection(getProperties(path));
-    }
-
     public GeekShopConnection(Properties properties) {
         pooledConnection = getPooledConnection(properties);
     }
@@ -38,6 +34,7 @@ public class GeekShopConnection {
     private PooledConnection getPooledConnection(Properties properties) {
         try {
             PGConnectionPoolDataSource dataSource = new PGConnectionPoolDataSource();
+
             dataSource.setDatabaseName(properties.getProperty("name"));
             dataSource.setUser(properties.getProperty("user"));
             dataSource.setPassword(properties.getProperty("password"));
@@ -48,16 +45,5 @@ public class GeekShopConnection {
             log.error("Can't get pooled of connections: " + e);
         }
         return null;
-    }
-
-    private Properties getProperties(String name) {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Properties properties = new Properties();
-        try (InputStream resourceStream = loader.getResourceAsStream(name)) {
-            properties.load(resourceStream);
-        } catch (IOException e) {
-            log.error("Can't load DB properties: " + e);
-        }
-        return properties;
     }
 }
