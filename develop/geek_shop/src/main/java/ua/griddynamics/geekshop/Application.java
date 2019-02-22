@@ -18,20 +18,22 @@ import java.io.IOException;
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        GeekShopConnection geekShopConnection = new GeekShopConnection("app/geek_shop_db.properties");
-        ServiceFacade serviceFacade = new ServiceFacade(new RepositoryFacade(geekShopConnection));
+//        GeekShopConnection geekShopConnection = new GeekShopConnection("app/geek_shop_db.properties");
+//        ServiceFacade serviceFacade = new ServiceFacade(new RepositoryFacade(geekShopConnection));
+//
+//        PageController pageController = new PageController(serviceFacade,
+//                new FreemarkerTemplate("/web"));
+//        CategoryController categoryController = new CategoryController(serviceFacade);
 
-        PageController pageController = new PageController(serviceFacade,
-                new FreemarkerTemplate("/web"));
-        CategoryController categoryController = new CategoryController(serviceFacade);
-
-        HttpServerConfig config = new HttpServerConfig();
-        config.setPort(8081);
+        HttpServerConfig config = new HttpServerConfig()
+                .setPort(8081)
+                .setVisibleRequest(true);
 
         HttpServer httpServer = new HttpServer(config);
-        httpServer.addReaction("/", "GET", pageController::getIndex);
-        httpServer.addReaction("/v1/categories", "GET", categoryController::getCategories);
-        httpServer.addReaction("/v1/categories/main", "GET", categoryController::getMainCategories);
+        httpServer.addReaction("/", "GET", ((request, response) -> response.getWriter().write("lol kek cheburek")));
+//        httpServer.addReaction("/", "GET", pageController::getIndex);
+//        httpServer.addReaction("/v1/categories", "GET", categoryController::getCategories);
+//        httpServer.addReaction("/v1/categories/main", "GET", categoryController::getMainCategories);
 
         httpServer.deploy();
     }

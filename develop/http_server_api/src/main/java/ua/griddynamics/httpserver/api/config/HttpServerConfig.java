@@ -1,6 +1,7 @@
 package ua.griddynamics.httpserver.api.config;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Properties;
 
@@ -9,75 +10,95 @@ import java.util.Properties;
  * @since 2019-02-12
  */
 @Data
+@NoArgsConstructor
 public class HttpServerConfig extends Properties {
-
-    public HttpServerConfig() {
-    }
 
     public HttpServerConfig(Properties properties) {
         putAll(properties);
     }
 
-    public void setHost(String host) {
+    public HttpServerConfig setHost(String host) {
         this.setProperty(ServerKeysConfig.HOST, host);
+        return this;
     }
 
-    public void setPort(int port) {
+    public HttpServerConfig setPort(int port) {
         this.setProperty(ServerKeysConfig.PORT, Integer.toString(port));
+        return this;
     }
 
-    public void setVisibleRequest(boolean visibleRequest) {
+    public HttpServerConfig setVisibleRequest(boolean visibleRequest) {
         this.setProperty(ServerKeysConfig.VISIBLE_REQUEST, String.valueOf(visibleRequest));
+        return this;
     }
 
-    public void setKeepAlive(boolean keepAlive) {
+    public HttpServerConfig setKeepAlive(boolean keepAlive) {
         this.setProperty(ServerKeysConfig.KEEP_ALIVE, String.valueOf(keepAlive));
+        return this;
     }
 
     /**
      * @param keepAliveTimeOut is time in second
      */
-    public void setKeepAliveTimeOut(int keepAliveTimeOut) {
+    public HttpServerConfig setKeepAliveTimeOut(int keepAliveTimeOut) {
         this.setProperty(ServerKeysConfig.KEEP_ALIVE_TIME, String.valueOf(keepAliveTimeOut));
+        return this;
     }
 
-    public void setKeepAliveTransactional(int countTransactional) {
-        this.setProperty(ServerKeysConfig.KEEP_ALIVE_TRANSACTIONAL, String.valueOf(countTransactional));
+    public HttpServerConfig setKeepAliveTransactional(int countTransactional) {
+        this.setProperty(ServerKeysConfig.KEEP_ALIVE_TRANSACTIONAL,
+                String.valueOf(countTransactional));
+        return this;
     }
 
-    public void setEmptyRequestTimeOut(int emptyRequestTimeOut) {
-        this.setProperty(ServerKeysConfig.EMPTY_REQUEST_TIME, String.valueOf(emptyRequestTimeOut));
+    public HttpServerConfig setEmptyRequestTimeOut(int emptyRequestTimeOut) {
+        this.setProperty(ServerKeysConfig.EMPTY_REQUEST_TIME,
+                String.valueOf(emptyRequestTimeOut));
+        return this;
     }
 
-    public void setPoolType(String poolType) {
+    public HttpServerConfig setPoolType(String poolType) {
         this.setProperty(ServerKeysConfig.POOL_TYPE, poolType);
+        return this;
     }
 
     // Request Pool
 
-    public void setCoreRequestPoolSize(int coreRequestPoolSize) {
-        this.setProperty(ServerKeysConfig.CORE_REQUEST_POOL_SIZE, String.valueOf(coreRequestPoolSize));
+    public HttpServerConfig setCoreRequestPoolSize(int coreRequestPoolSize) {
+        this.setProperty(ServerKeysConfig.CORE_REQUEST_POOL_SIZE,
+                String.valueOf(coreRequestPoolSize));
+        return this;
     }
 
-    public void setMaxRequestPoolSize(int maxRequestPoolSize) {
-        this.setProperty(ServerKeysConfig.MAX_REQUEST_POOL_SIZE, String.valueOf(maxRequestPoolSize));
+    public HttpServerConfig setMaxRequestPoolSize(int maxRequestPoolSize) {
+        this.setProperty(ServerKeysConfig.MAX_REQUEST_POOL_SIZE,
+                String.valueOf(maxRequestPoolSize));
+        return this;
     }
 
-    public void setTimeIdleRequestPool(int timeIdleRequestPool) {
-        this.setProperty(ServerKeysConfig.TIME_IDLE_REQUEST_POOL, String.valueOf(timeIdleRequestPool));
+    public HttpServerConfig setTimeIdleRequestPool(int timeIdleRequestPool) {
+        this.setProperty(ServerKeysConfig.TIME_IDLE_REQUEST_POOL,
+                String.valueOf(timeIdleRequestPool));
+        return this;
     }
 
     // KeepAlive Pool
 
-    public void setCoreKeepAlivePoolSize(int coreKeepAlivePoolSize) {
-        this.setProperty(ServerKeysConfig.CORE_KEEP_ALIVE_POOL_SIZE, String.valueOf(coreKeepAlivePoolSize));
+    public HttpServerConfig setCoreKeepAlivePoolSize(int coreKeepAlivePoolSize) {
+        this.setProperty(ServerKeysConfig.CORE_KEEP_ALIVE_POOL_SIZE,
+                String.valueOf(coreKeepAlivePoolSize));
+        return this;
     }
 
-    public void setMaxKeepAlivePoolSize(int maxKeepAlivePoolSize) {
-        this.setProperty(ServerKeysConfig.MAX_KEEP_ALIVE_POOL_SIZE, String.valueOf(maxKeepAlivePoolSize));
+    public HttpServerConfig setMaxKeepAlivePoolSize(int maxKeepAlivePoolSize) {
+        this.setProperty(ServerKeysConfig.MAX_KEEP_ALIVE_POOL_SIZE,
+                String.valueOf(maxKeepAlivePoolSize));
+        return this;
     }
 
-    public void setTimeIdleKeepAlivePool(int timeIdleKeepAlivePool) {
-        this.setProperty(ServerKeysConfig.TIME_IDLE_KEEP_ALIVE_POOL, String.valueOf(timeIdleKeepAlivePool));
+    public HttpServerConfig setTimeIdleKeepAlivePool(int timeIdleKeepAlivePool) {
+        this.setProperty(ServerKeysConfig.TIME_IDLE_KEEP_ALIVE_POOL,
+                String.valueOf(timeIdleKeepAlivePool));
+        return this;
     }
 }
