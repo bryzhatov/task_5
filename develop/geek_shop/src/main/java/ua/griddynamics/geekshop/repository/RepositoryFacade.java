@@ -13,8 +13,7 @@ public class RepositoryFacade {
     @Getter
     private final CategoryRepository categoryPostgresRepository;
 
-    public RepositoryFacade(ConnectionFacade facade) {
-        GeekShopConnection geekShopConnection = facade.getGeekShopConnection();
-        categoryPostgresRepository = new CategoryPostgresRepository(geekShopConnection::getConnection);
+    public RepositoryFacade(GeekShopConnection connection) {
+        categoryPostgresRepository = new CategoryPostgresRepository(connection::getConnection);
     }
 }

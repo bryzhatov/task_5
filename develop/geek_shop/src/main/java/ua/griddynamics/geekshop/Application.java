@@ -2,9 +2,8 @@ package ua.griddynamics.geekshop;
 
 import ua.griddynamics.geekshop.controllers.CategoryController;
 import ua.griddynamics.geekshop.controllers.PageController;
-import ua.griddynamics.geekshop.controllers.ResourceController;
-import ua.griddynamics.geekshop.repository.ConnectionFacade;
 import ua.griddynamics.geekshop.repository.RepositoryFacade;
+import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnection;
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
 import ua.griddynamics.geekshop.service.facade.ServiceFacade;
 import ua.griddynamics.httpserver.HttpServer;
@@ -19,7 +18,8 @@ import java.io.IOException;
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        ServiceFacade serviceFacade = new ServiceFacade(new RepositoryFacade(new ConnectionFacade()));
+        GeekShopConnection geekShopConnection = new GeekShopConnection("app/geek_shop_db.properties");
+        ServiceFacade serviceFacade = new ServiceFacade(new RepositoryFacade(geekShopConnection));
 
         PageController pageController = new PageController(serviceFacade,
                 new FreemarkerTemplate("/web"));

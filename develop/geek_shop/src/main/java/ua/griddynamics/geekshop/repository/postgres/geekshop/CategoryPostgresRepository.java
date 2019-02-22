@@ -21,77 +21,6 @@ public class CategoryPostgresRepository implements CategoryRepository {
     }
 
     @Override
-    public int create(Category category) throws DataBaseException {
-        try (Connection connection = connectionSupplier.get()) {
-
-            try (PreparedStatement statement = connection
-                    .prepareStatement("INSERT INTO \"category\" (name) VALUES (?) RETURNING id")) {
-
-                statement.setString(1, category.getName());
-
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    if (resultSet != null && resultSet.next()) {
-                        return resultSet.getInt("id");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new DataBaseException(e.getMessage(), e);
-        }
-        return 0;
-    }
-
-    @Override
-    public Category get(int id) throws DataBaseException {
-        try (Connection connection = connectionSupplier.get()) {
-
-            try (PreparedStatement statement = connection
-                    .prepareStatement("SELECT * FROM \"category\" WHERE id = ?")) {
-
-                statement.setInt(1, id);
-
-                try (ResultSet resultSet = statement.executeQuery()) {
-
-                    if (resultSet != null && resultSet.next()) {
-                        return categoryMapper(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new DataBaseException(e.getMessage(), e);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean update(Category category) throws DataBaseException {
-        try (Connection connection = connectionSupplier.get()) {
-
-            try (PreparedStatement statement = connection
-                    .prepareStatement("UPDATE \"category\" SET name = ? WHERE id = ?")) {
-
-                statement.setString(1, category.getName());
-                return statement.executeUpdate() == 1;
-            }
-        } catch (SQLException e) {
-            throw new DataBaseException(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public boolean delete(int id) throws DataBaseException {
-        try (Connection connection = connectionSupplier.get()) {
-
-            try (PreparedStatement statement = connection
-                    .prepareStatement("DELETE FROM \"category\" WHERE id = ?")) {
-                return statement.executeUpdate() == 1;
-            }
-        } catch (SQLException e) {
-            throw new DataBaseException(e.getMessage(), e);
-        }
-    }
-
-    @Override
     public List<Category> getCategories() throws DataBaseException {
         List<Category> categories = new ArrayList<>();
 
@@ -138,10 +67,9 @@ public class CategoryPostgresRepository implements CategoryRepository {
     }
 
     private Category categoryMapper(ResultSet resultSet) throws SQLException {
-        Category category = new Category();
-        category.setId(resultSet.getInt("id"));
-        category.setParentId(resultSet.getInt("parent_id"));
-        category.setName(resultSet.getString("name"));
-        return category;
+        int id = resultSet.getInt("id");
+        int parentId = resultSet.getInt("parent_id");
+        String name = resultSet.getString("name");
+        return new Category(id, parentId, name);
     }
 }
