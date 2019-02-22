@@ -13,7 +13,7 @@
         <module>http_server</module>
         <module>http_server_api</module>
         <module>geek_shop</module>
-        <module>geek_shop_res</module>
+        <module>template</module>
     </modules>
 
     <dependencyManagement>
