@@ -43,14 +43,14 @@ public class Application {
         httpServer.deploy();
     }
 
-    private static Properties getProperties(String name) {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Properties properties = new Properties();
-        try (InputStream resourceStream = loader.getResourceAsStream(name)) {
-            properties.load(resourceStream);
-        } catch (IOException e) {
-            log.error("Can't load DB properties: " + e);
-        }
-        return properties;
-    }
+//    private static Properties getProperties(String name) {
+//        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+//        Properties properties = new Properties();
+//        try (InputStream resourceStream = loader.getResourceAsStream(name)) {
+//            properties.load(resourceStream);
+//        } catch (IOException e) {
+//            log.error("Can't load DB properties: " + e);
+//        }
+//        return properties;
+//    }
 }
