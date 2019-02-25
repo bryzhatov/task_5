@@ -86,4 +86,9 @@ public class RequestHttpTask extends HttpTask {
         }
         httpServer.getResponseService().respond(request, response);
     }
+
+    private Reaction getReaction(String url) {
+        Map<String, Reaction> reactions = httpServer.getPatternMap().get(url);
+        return null;
+    }
 }

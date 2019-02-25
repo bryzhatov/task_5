@@ -2,6 +2,7 @@ package ua.griddynamics.httpserver;
 
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.api.Reaction;
 import ua.griddynamics.httpserver.api.Server;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
@@ -27,6 +28,7 @@ import java.util.function.Function;
 @Log4j
 public class HttpServer implements Server {
     private final Map<String, Map<String, Reaction>> reactionMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, Reaction>> patternMap = new ConcurrentHashMap<>();
     private final RequestService requestService = new RequestService();
     private final ServerSocket socketServer = new ServerSocket();
     private final ResponseService responseService;
@@ -93,8 +95,20 @@ public class HttpServer implements Server {
 
     @Override
     public void addReaction(String url, String method, Reaction reaction) {
-        Map<String, Reaction> valueReactionMap = reactionMap.computeIfAbsent(url, k -> new ConcurrentHashMap<>());
+        Map<String, Reaction> valueReactionMap;
+
+        if (StringUtils.countMatches(url, "*") == 1 && StringUtils.endsWith(url, "/*")) {
+            valueReactionMap = patternMap.computeIfAbsent(url, k -> new ConcurrentHashMap<>());
+        } else {
+            valueReactionMap = reactionMap.computeIfAbsent(url, k -> new ConcurrentHashMap<>());
+        }
         valueReactionMap.put(method, reaction);
+    }
+
+    public static void main(String[] args) {
+        String a = StringUtils.removeEnd("/resources/*", "*");
+        System.out.println(a);
+        System.out.println(StringUtils.startsWith("/resources/abc", a));
     }
 
     private void connectionClose(Socket connection) {
