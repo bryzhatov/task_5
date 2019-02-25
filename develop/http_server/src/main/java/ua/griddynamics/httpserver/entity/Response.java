@@ -44,7 +44,7 @@ public class Response implements HttpResponse {
     public void write(Reader stream) throws IOException {
         int i;
         StringBuilder builder = new StringBuilder();
-        //TODO READER
+        //TODO READE
         while ((i = stream.read()) != -1) {
             builder.append((char) i);
         }

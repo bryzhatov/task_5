@@ -6,12 +6,12 @@ import ua.griddynamics.geekshop.Application;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 
-import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Dmitry Bryzhatov
@@ -19,18 +19,42 @@ import java.nio.file.Paths;
  */
 @Log4j
 public class ResourceController {
+    private final Map<String, byte[]> cache = new ConcurrentHashMap<>();
 
     public void getResources(HttpRequest request, HttpResponse response) {
-        String url = StringUtils.splitByWholeSeparator(request.getUrl(), "/static/")[0];
-        InputStream inputStream = Application.class.getResourceAsStream("/web/static/" + url);
+        byte[] cacheFile = cache.get(request.getUrl());
 
-        if (inputStream != null) {
-            try (Reader stream = new BufferedReader(new InputStreamReader(inputStream))) {
-                response.write(stream);
+        if (cacheFile == null) {
+            String url = StringUtils.splitByWholeSeparator(request.getUrl(), "/static/")[0];
+            try (InputStream inputStream = Application.class.getResourceAsStream("/web/static/" + url)) {
+                cacheFile = readAllBytes(inputStream);
+                cache.put(url, cacheFile);
             } catch (IOException e) {
-                // TODO will do set code in Response
-                log.error("Can't read static resources: " + e);
+                // TODO code, message
+                log.error("");
             }
         }
+
+        response.write(new String(cacheFile));
+    }
+
+    private byte[] readAllBytes(InputStream stream) {
+        List<Byte> list = new ArrayList<>();
+        int i;
+        try {
+            while ((i = stream.read()) != -1) {
+                list.add((byte) i);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        byte[] mass = new byte[list.size()];
+
+        for (int a = 0; a < list.size(); a++) {
+            mass[a] = list.get(a);
+        }
+
+        return mass;
     }
 }
