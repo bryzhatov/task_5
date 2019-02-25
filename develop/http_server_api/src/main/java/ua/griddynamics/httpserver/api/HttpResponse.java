@@ -1,6 +1,7 @@
 package ua.griddynamics.httpserver.api;
 
-import java.io.StringWriter;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * @author Dmitry Bryzhatov
@@ -8,7 +9,9 @@ import java.io.StringWriter;
  */
 public interface HttpResponse {
 
-    StringWriter getWriter();
+    void write(Reader stream) throws IOException;
+
+    void write(String string);
 
     void addHeader(String key, String value);
 

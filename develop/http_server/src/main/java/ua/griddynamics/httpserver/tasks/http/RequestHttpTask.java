@@ -1,6 +1,7 @@
 package ua.griddynamics.httpserver.tasks.http;
 
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.api.Reaction;
 import ua.griddynamics.httpserver.entity.Request;
@@ -76,19 +77,31 @@ public class RequestHttpTask extends HttpTask {
 
     private void returnResponse(Request request) throws IOException {
         Response response = new Response(request);
-        Map<String, Reaction> reactions = httpServer.getReactionMap().get(request.getUrl());
 
-        if (reactions != null) {
-            Reaction reaction = reactions.get(request.getMethod());
-            if (reaction != null) {
-                reaction.react(request, response);
-            }
+        Reaction reaction = getReaction(request.getUrl(), request.getMethod());
+
+        if (reaction != null) {
+            reaction.react(request, response);
         }
+
         httpServer.getResponseService().respond(request, response);
     }
 
-    private Reaction getReaction(String url) {
-        Map<String, Reaction> reactions = httpServer.getPatternMap().get(url);
+    private Reaction getReaction(String url, String method) {
+        synchronized (httpServer.getPatternMap()) {
+            for (Map.Entry<String, Map<String, Reaction>> entry : httpServer.getPatternMap().entrySet()) {
+                if (StringUtils.startsWith(url, entry.getKey())) {
+                    return entry.getValue().get(method);
+                }
+            }
+        }
+
+        Map<String, Reaction> reactions = httpServer.getReactionMap().get(url);
+
+        if (reactions != null) {
+            return reactions.get(method);
+        }
+
         return null;
     }
 }

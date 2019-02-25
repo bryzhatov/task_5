@@ -27,13 +27,13 @@
 
             <dependency>
                 <groupId>develop</groupId>
-                <artifactId>http_server_api</artifactId>
+                <artifactId>template</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>develop</groupId>
-                <artifactId>template</artifactId>
+                <artifactId>http_server_api</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
 

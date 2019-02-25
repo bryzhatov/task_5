@@ -6,10 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.api.Reaction;
 import ua.griddynamics.httpserver.api.Server;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
-import ua.griddynamics.httpserver.properties.HttpServerProperties;
 import ua.griddynamics.httpserver.pool.ThreadPool;
-import ua.griddynamics.httpserver.pool.util.ThreadPoolDTO;
 import ua.griddynamics.httpserver.pool.factory.ThreadPoolFactory;
+import ua.griddynamics.httpserver.pool.util.ThreadPoolDTO;
+import ua.griddynamics.httpserver.properties.HttpServerProperties;
 import ua.griddynamics.httpserver.service.RequestService;
 import ua.griddynamics.httpserver.service.ResponseService;
 import ua.griddynamics.httpserver.tasks.http.RequestHttpTask;
@@ -17,8 +17,11 @@ import ua.griddynamics.httpserver.tasks.http.RequestHttpTask;
 import java.io.IOException;
 import java.net.*;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+
+import static java.util.Collections.synchronizedMap;
+import static java.util.Comparator.comparingInt;
 
 /**
  * @author Dmitry Bryzhatov
@@ -28,7 +31,8 @@ import java.util.function.Function;
 @Log4j
 public class HttpServer implements Server {
     private final Map<String, Map<String, Reaction>> reactionMap = new ConcurrentHashMap<>();
-    private final Map<String, Map<String, Reaction>> patternMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, Reaction>> patternMap =
+            synchronizedMap(new TreeMap<>(comparingInt(String::length).reversed()));
     private final RequestService requestService = new RequestService();
     private final ServerSocket socketServer = new ServerSocket();
     private final ResponseService responseService;
@@ -98,17 +102,22 @@ public class HttpServer implements Server {
         Map<String, Reaction> valueReactionMap;
 
         if (StringUtils.countMatches(url, "*") == 1 && StringUtils.endsWith(url, "/*")) {
-            valueReactionMap = patternMap.computeIfAbsent(url, k -> new ConcurrentHashMap<>());
-        } else {
-            valueReactionMap = reactionMap.computeIfAbsent(url, k -> new ConcurrentHashMap<>());
-        }
-        valueReactionMap.put(method, reaction);
-    }
+            url = StringUtils.removeEnd(url, "*");
 
-    public static void main(String[] args) {
-        String a = StringUtils.removeEnd("/resources/*", "*");
-        System.out.println(a);
-        System.out.println(StringUtils.startsWith("/resources/abc", a));
+            valueReactionMap = patternMap.get(url);
+            if (valueReactionMap == null) {
+                valueReactionMap = new ConcurrentHashMap<>();
+                patternMap.put(url, valueReactionMap);
+            }
+        } else {
+            valueReactionMap = reactionMap.get(url);
+            if (valueReactionMap == null) {
+                valueReactionMap = new ConcurrentHashMap<>();
+                reactionMap.put(url, valueReactionMap);
+            }
+        }
+
+        valueReactionMap.put(method, reaction);
     }
 
     private void connectionClose(Socket connection) {

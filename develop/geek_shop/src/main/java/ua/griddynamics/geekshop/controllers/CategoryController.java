@@ -24,7 +24,7 @@ public class CategoryController {
         Gson gson = new Gson();
         try {
             String jsonCategory = gson.toJson(categoryService.getCategories());
-            response.getWriter().write(jsonCategory);
+            response.write(jsonCategory);
 
         } catch (ServiceException e) {
             log.error(e);
@@ -36,7 +36,7 @@ public class CategoryController {
         try {
 
             String jsonCategory = gson.toJson(categoryService.getMainCategories());
-            response.getWriter().write(jsonCategory);
+            response.write(jsonCategory);
 
         } catch (ServiceException e) {
             log.error(e);

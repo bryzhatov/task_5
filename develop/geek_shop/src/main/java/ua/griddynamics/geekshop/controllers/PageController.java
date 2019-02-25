@@ -32,7 +32,7 @@ public class PageController {
             String page = templateEngine.render("index.html",
                     singletonMap("categories", categoryService.getCategories())
             );
-            response.getWriter().write(page);
+            response.write(page);
         } catch (TemplateException | ServiceException e) {
             log.error(e);
         }

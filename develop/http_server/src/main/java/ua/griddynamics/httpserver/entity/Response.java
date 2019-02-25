@@ -3,6 +3,9 @@ package ua.griddynamics.httpserver.entity;
 import lombok.Data;
 import ua.griddynamics.httpserver.api.HttpResponse;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.HashMap;
@@ -36,5 +39,20 @@ public class Response implements HttpResponse {
     @Override
     public String getHeader(String key) {
         return headers.get(key);
+    }
+
+    public void write(Reader stream) throws IOException {
+        int i;
+        StringBuilder builder = new StringBuilder();
+        //TODO READER
+        while ((i = stream.read()) != -1) {
+            builder.append((char) i);
+        }
+        writer.write(builder.toString());
+    }
+
+    @Override
+    public void write(String string) {
+        writer.write(string);
     }
 }
