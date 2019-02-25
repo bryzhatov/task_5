@@ -99,22 +99,24 @@ public class HttpServer implements Server {
 
     @Override
     public void addReaction(String url, String method, Reaction reaction) {
-        Map<String, Reaction> valueReactionMap;
-
         if (StringUtils.countMatches(url, "*") == 1 && StringUtils.endsWith(url, "/*")) {
             url = StringUtils.removeEnd(url, "*");
-
-            valueReactionMap = patternMap.get(url);
-            if (valueReactionMap == null) {
-                valueReactionMap = new ConcurrentHashMap<>();
-                patternMap.put(url, valueReactionMap);
-            }
+            addReaction(patternMap, url, method, reaction);
         } else {
-            valueReactionMap = reactionMap.get(url);
-            if (valueReactionMap == null) {
-                valueReactionMap = new ConcurrentHashMap<>();
-                reactionMap.put(url, valueReactionMap);
-            }
+            addReaction(reactionMap, url, method, reaction);
+        }
+    }
+
+    private void addReaction(Map<String, Map<String, Reaction>> map, String url, String method, Reaction reaction) {
+        Map<String, Reaction> valueReactionMap = map.get(url);
+
+        if (valueReactionMap != null && valueReactionMap.get(method) != null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (valueReactionMap == null) {
+            valueReactionMap = new ConcurrentHashMap<>();
+            map.put(url, valueReactionMap);
         }
 
         valueReactionMap.put(method, reaction);
