@@ -35,4 +35,8 @@ public class CategoryService {
             throw new ServiceException("Can't get all categories", e);
         }
     }
+
+    public static void main(String[] args) {
+        System.out.println("classpath:web/static");
+    }
 }

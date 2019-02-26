@@ -55,7 +55,7 @@ public class RequestHttpTask extends HttpTask {
 
         if (request.isCorrect()) {
             if (httpServer.getPropServer().isVisibleRequest()) {
-                log.info(request.getMethod() + " " + request.getUrl());
+                log.info(request.getMethod().name() + " " + request.getUrl());
             }
 
             try {

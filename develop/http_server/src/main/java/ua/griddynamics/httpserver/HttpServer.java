@@ -116,7 +116,6 @@ public class HttpServer implements Server {
             } finally {
                 writeLock.unlock();
             }
-
         } else {
             addReaction(reactionMap, url, method, reaction);
         }
@@ -126,7 +125,7 @@ public class HttpServer implements Server {
         Map<RequestMethods, Reaction> valueReactionMap = map.get(url);
 
         if (valueReactionMap != null && valueReactionMap.get(method) != null) {
-            throw new IllegalArgumentException("Duplicate reaction url: " + url + ", method: " + method);
+            throw new IllegalArgumentException("Duplicate reaction url: " + url + ", method: " + method.name());
         }
 
         if (valueReactionMap == null) {
