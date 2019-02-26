@@ -2,6 +2,7 @@ package ua.griddynamics.httpserver.properties;
 
 import ua.griddynamics.httpserver.api.config.ServerKeysConfig;
 
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
 
@@ -22,6 +23,10 @@ public class ServerProperties {
 
     public Integer getPort() {
         return Integer.valueOf(innerProperty.getProperty(ServerKeysConfig.PORT));
+    }
+
+    public Path getStaticFolder() {
+        return (Path) innerProperty.get(ServerKeysConfig.STATIC_FOLDER);
     }
 
     public boolean isVisibleRequest() {

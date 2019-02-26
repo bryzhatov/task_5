@@ -1,9 +1,8 @@
 package ua.griddynamics.geekshop;
 
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.geekshop.controllers.CategoryController;
+import ua.griddynamics.geekshop.controllers.rest.CategoryController;
 import ua.griddynamics.geekshop.controllers.PageController;
-import ua.griddynamics.geekshop.controllers.ResourceController;
 import ua.griddynamics.geekshop.repository.RepositoryFacade;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnection;
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
@@ -12,6 +11,7 @@ import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -26,17 +26,17 @@ public class Application {
         GeekShopConnection geekShopConnection = new GeekShopConnection(properties);
         ServiceFacade serviceFacade = new ServiceFacade(new RepositoryFacade(geekShopConnection));
 
-        ResourceController resourceController = new ResourceController();
         PageController pageController = new PageController(serviceFacade,
                 new FreemarkerTemplate("/web"));
         CategoryController categoryController = new CategoryController(serviceFacade);
 
+
+
         HttpServerConfig config = new HttpServerConfig()
+                .setStaticFolder(Paths.get("/Users/dbryzhatov/Desktop/task_5/develop/geek_shop/src/main/resources/web/static"))
                 .setPort(8080);
 
         HttpServer httpServer = new HttpServer(config);
-
-        httpServer.addReaction("/static/*", "GET", resourceController::getResources);
 
         httpServer.addReaction("/", "GET", pageController::getIndex);
         httpServer.addReaction("/v1/categories", "GET", categoryController::getCategories);

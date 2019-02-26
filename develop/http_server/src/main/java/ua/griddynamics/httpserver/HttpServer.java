@@ -13,9 +13,11 @@ import ua.griddynamics.httpserver.properties.HttpServerProperties;
 import ua.griddynamics.httpserver.service.RequestService;
 import ua.griddynamics.httpserver.service.ResponseService;
 import ua.griddynamics.httpserver.tasks.http.RequestHttpTask;
+import ua.griddynamics.httpserver.utils.controllers.ResourceController;
 
 import java.io.IOException;
 import java.net.*;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,11 +34,11 @@ import static java.util.Comparator.comparingInt;
 @Data
 @Log4j
 public class HttpServer implements Server {
-    private final Map<String, Map<String, Reaction>> reactionMap = new ConcurrentHashMap<>();
     private final ReadWriteLock readWriteLockPatternMap = new ReentrantReadWriteLock(true);
+    private final Map<String, Map<String, Reaction>> reactionMap = new ConcurrentHashMap<>();
+    private final RequestService requestService = new RequestService();
     private final Map<String, Map<String, Reaction>> patternMap =
             new TreeMap<>(comparingInt(String::length).reversed());
-    private final RequestService requestService = new RequestService();
     private final ServerSocket socketServer = new ServerSocket();
     private final ResponseService responseService;
     private final HttpServerProperties propServer;
@@ -52,6 +54,8 @@ public class HttpServer implements Server {
                 .getPool(propServer.getPoolType());
         requestThreadPool = new ThreadPoolFactory(getRequestPoolDTO(propServer))
                 .getPool(propServer.getPoolType());
+
+        tryInitResourceController();
     }
 
     @Override
@@ -144,6 +148,15 @@ public class HttpServer implements Server {
         }
     }
 
+    private void tryInitResourceController() {
+        Path path = propServer.getStaticFolder();
+
+        if (path != null) {
+            ResourceController resourceController = new ResourceController(path);
+            addReaction("/static/*", "GET", resourceController::getResources);
+        }
+    }
+
     private ThreadPoolDTO getRequestPoolDTO(HttpServerProperties properties) {
         ThreadPoolDTO threadPoolDTO = new ThreadPoolDTO();
         threadPoolDTO.setCorePoolSize(properties.getCoreRequestPoolSize());
@@ -158,9 +171,5 @@ public class HttpServer implements Server {
         threadPoolDTO.setMaxPoolSize(properties.getMaxKeepAlivePoolSize());
         threadPoolDTO.setKeepAliveTime(properties.getTimeIdleKeepAlivePool());
         return threadPoolDTO;
-    }
-
-    public enum Clas {
-
     }
 }

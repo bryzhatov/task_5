@@ -1,4 +1,4 @@
-package ua.griddynamics.geekshop.controllers;
+package ua.griddynamics.geekshop.controllers.rest;
 
 import com.google.gson.Gson;
 import lombok.extern.log4j.Log4j;
