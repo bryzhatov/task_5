@@ -8,8 +8,11 @@ import ua.griddynamics.httpserver.api.HttpResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author Dmitry Bryzhatov
@@ -17,7 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Log4j
 public class ResourceController {
-    private final Map<String, byte[]> cache = new ConcurrentHashMap<>();
+    private final ReadWriteLock readWriteLockPatternMap = new ReentrantReadWriteLock(true);
+    private final Map<String, byte[]> cache = new HashMap<>();
     private final Path staticResDir;
 
     public ResourceController(Path staticResDir) {
@@ -28,7 +32,14 @@ public class ResourceController {
         try {
             String findResName = StringUtils.splitByWholeSeparator(request.getUrl(), "/static/")[0];
 
-            byte[] byteFile = cache.get(findResName);
+            Lock lock = readWriteLockPatternMap.readLock();
+            byte[] byteFile;
+            try {
+                lock.tryLock();
+                byteFile = cache.get(findResName);
+            } finally {
+                lock.unlock();
+            }
 
             if (byteFile != null) {
                 response.write(new String(byteFile));
@@ -54,6 +65,12 @@ public class ResourceController {
     }
 
     private void cacheFile(String file, byte[] bytesFile) {
-        cache.put(file, bytesFile);
+        Lock lock = readWriteLockPatternMap.writeLock();
+        try {
+            lock.tryLock();
+            cache.put(file, bytesFile);
+        } finally {
+            lock.unlock();
+        }
     }
 }

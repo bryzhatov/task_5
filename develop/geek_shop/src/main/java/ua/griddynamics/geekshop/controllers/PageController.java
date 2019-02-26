@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.exception.ServiceException;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
-import ua.griddynamics.geekshop.service.facade.ServiceFacade;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 
@@ -18,12 +17,12 @@ import static java.util.Collections.singletonMap;
  */
 @Log4j
 public class PageController {
+    private final TemplateEngine templateEngine;
     @Setter
     private CategoryService categoryService;
-    private final TemplateEngine templateEngine;
 
-    public PageController(ServiceFacade serviceFacade, TemplateEngine templateEngine) {
-        categoryService = serviceFacade.getCategoryService();
+    public PageController(CategoryService categoryService, TemplateEngine templateEngine) {
+        this.categoryService =categoryService;
         this.templateEngine = templateEngine;
     }
 

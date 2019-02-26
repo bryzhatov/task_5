@@ -1,10 +1,10 @@
 package ua.griddynamics.geekshop.controllers.rest;
 
 import com.google.gson.Gson;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.exception.ServiceException;
 import ua.griddynamics.geekshop.service.CategoryService;
-import ua.griddynamics.geekshop.service.facade.ServiceFacade;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 
@@ -14,10 +14,11 @@ import ua.griddynamics.httpserver.api.HttpResponse;
  */
 @Log4j
 public class CategoryController {
+    @Setter
     private CategoryService categoryService;
 
-    public CategoryController(ServiceFacade serviceFacade) {
-        categoryService = serviceFacade.getCategoryService();
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     public void getCategories(HttpRequest request, HttpResponse response) {

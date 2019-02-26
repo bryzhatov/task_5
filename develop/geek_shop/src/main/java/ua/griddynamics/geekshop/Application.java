@@ -3,10 +3,10 @@ package ua.griddynamics.geekshop;
 import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.controllers.rest.CategoryController;
 import ua.griddynamics.geekshop.controllers.PageController;
-import ua.griddynamics.geekshop.repository.RepositoryFacade;
+import ua.griddynamics.geekshop.repository.postgres.geekshop.CategoryPostgresRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnection;
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
-import ua.griddynamics.geekshop.service.facade.ServiceFacade;
+import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
 
@@ -20,16 +20,15 @@ import java.util.Properties;
  */
 @Log4j
 public class Application {
-
     public static void main(String[] args) throws IOException {
         Properties properties = getProperties("app/geek_shop_db.properties");
         GeekShopConnection geekShopConnection = new GeekShopConnection(properties);
-        ServiceFacade serviceFacade = new ServiceFacade(new RepositoryFacade(geekShopConnection));
+        CategoryPostgresRepository categoryPostgresRepository = new CategoryPostgresRepository(geekShopConnection::getConnection);
+        CategoryService categoryService = new CategoryService(categoryPostgresRepository);
 
-        PageController pageController = new PageController(serviceFacade,
+        PageController pageController = new PageController(categoryService,
                 new FreemarkerTemplate("/web"));
-        CategoryController categoryController = new CategoryController(serviceFacade);
-
+        CategoryController categoryController = new CategoryController(categoryService);
 
 
         HttpServerConfig config = new HttpServerConfig()
