@@ -1,9 +1,9 @@
 package ua.griddynamics.httpserver.service;
 
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.httpserver.properties.HttpServerProperties;
 import ua.griddynamics.httpserver.entity.Request;
 import ua.griddynamics.httpserver.entity.Response;
+import ua.griddynamics.httpserver.properties.HttpServerProperties;
 import ua.griddynamics.httpserver.utils.HttpCodes;
 
 import java.io.BufferedWriter;
@@ -23,6 +23,7 @@ public class ResponseService {
     private final ThreadLocal<DateTimeFormatter> threadLocal = ThreadLocal.withInitial(
             () -> DateTimeFormatter.ofPattern("E, dd MMM yyyy HH:mm:ss 'GTM'", Locale.ENGLISH));
     private final HttpCodes httpCodes = new HttpCodes();
+    private final ErrorPage errorPage = new ErrorPage();
     private final HttpServerProperties serverProp;
 
     public ResponseService(HttpServerProperties serverProp) {
@@ -72,16 +73,25 @@ public class ResponseService {
         headersBuilder.append("\r\n\r\n");
         writer.write(headersBuilder.toString());
 
-        int statusCode = response.getStatus();
-
-        if (response.getWriter().getBuffer().length() > 0 && statusCode >= 200 && statusCode < 300) {
+        if (response.getWriter().getBuffer().length() > 0) {
             writer.write(response.getWriter().toString());
+        } else {
+            writer.write(errorPage.getErrorPage(response.getStatus()));
         }
 
         if (!request.getConnection().isClosed()) {
             writer.flush();
         } else {
             log.error("Connection closed before write answer.");
+        }
+    }
+
+    private class ErrorPage {
+        public String getErrorPage(int status) {
+            return "<html><title></title><body>" +
+                    status + " " +
+                    httpCodes.getMessage(status) +
+                    "</body></html>";
         }
     }
 }

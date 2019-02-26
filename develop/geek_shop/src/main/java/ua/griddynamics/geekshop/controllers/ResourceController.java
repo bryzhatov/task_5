@@ -34,11 +34,11 @@ public class ResourceController {
                     cache.put(url, cacheFile);
                     response.write(new String(cacheFile));
                 } else {
-//                    response.setStatus(404);
+                    response.setStatus(404);
                     response.write("Can't find static resource: " + url);
                 }
             } catch (IOException e) {
-                log.error("");
+                log.info("Error with static resources: " + e);
             }
         } else {
             response.write(new String(cacheFile));

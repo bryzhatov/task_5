@@ -32,8 +32,7 @@ public class Application {
         CategoryController categoryController = new CategoryController(serviceFacade);
 
         HttpServerConfig config = new HttpServerConfig()
-                .setPort(8080)
-                .setVisibleRequest(true);
+                .setPort(8080);
 
         HttpServer httpServer = new HttpServer(config);
 
