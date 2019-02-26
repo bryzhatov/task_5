@@ -2,7 +2,7 @@ package ua.griddynamics.httpserver.entity;
 
 import lombok.Data;
 import ua.griddynamics.httpserver.api.HttpRequest;
-import ua.griddynamics.httpserver.utils.RequestUtil;
+import ua.griddynamics.httpserver.api.controller.RequestMethods;
 
 import java.io.*;
 import java.net.Socket;
@@ -20,8 +20,8 @@ public class Request implements HttpRequest {
     private final BufferedReader readerStream;
     private final BufferedWriter writerStream;
     private final Socket connection;
+    private RequestMethods method;
     private String location;
-    private String method;
     private byte[] body;
     private String url;
 
@@ -32,8 +32,7 @@ public class Request implements HttpRequest {
     }
 
     public boolean isCorrect() {
-        return url != null && url.matches("/[A-z0-9$#=,+*@!'%&~:_/\\.\\[\\]\\(\\)]*")
-                && method != null && RequestUtil.isMethodExist(method);
+        return url != null && url.matches("/[A-z0-9$#=,+*@!'%&~:_/\\.\\[\\]\\(\\)]*") && method != null;
     }
 
     public boolean isKeepAlive() {
@@ -67,9 +66,5 @@ public class Request implements HttpRequest {
     public void setUrl(String url) {
         this.url = url;
         this.location = "http:/" + connection.getLocalSocketAddress() + url;
-    }
-
-    public void setMethod() {
-        this.method = method.toUpperCase();
     }
 }

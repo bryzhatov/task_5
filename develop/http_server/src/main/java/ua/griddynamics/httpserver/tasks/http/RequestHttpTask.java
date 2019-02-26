@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.api.Reaction;
+import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.entity.Request;
 import ua.griddynamics.httpserver.entity.Response;
 
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author Dmitry Bryzhatov
@@ -89,11 +89,11 @@ public class RequestHttpTask extends HttpTask {
         httpServer.getResponseService().respond(request, response);
     }
 
-    private Reaction getReaction(String url, String method) {
+    private Reaction getReaction(String url, RequestMethods method) {
         Lock readLock = httpServer.getReadWriteLockPatternMap().readLock();
         try {
             readLock.tryLock();
-            for (Map.Entry<String, Map<String, Reaction>> entry : httpServer.getPatternMap().entrySet()) {
+            for (Map.Entry<String, Map<RequestMethods, Reaction>> entry : httpServer.getPatternMap().entrySet()) {
                     if (StringUtils.startsWith(url, entry.getKey())) {
                         return entry.getValue().get(method);
                     }
@@ -103,7 +103,7 @@ public class RequestHttpTask extends HttpTask {
         }
 
 
-        Map<String, Reaction> reactions = httpServer.getReactionMap().get(url);
+        Map<RequestMethods, Reaction> reactions = httpServer.getReactionMap().get(url);
 
         if (reactions != null) {
             return reactions.get(method);

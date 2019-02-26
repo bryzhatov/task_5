@@ -2,6 +2,7 @@ package ua.griddynamics.httpserver.service;
 
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
+import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.entity.Request;
 
 import java.io.BufferedReader;
@@ -32,7 +33,8 @@ public class RequestService {
 
     private void parseStatusLine(Request request, String head) {
         String[] headArray = StringUtils.split(head, " ");
-        request.setMethod(headArray[0]);
+
+        request.setMethod(RequestMethods.get(headArray[0]));
 
         String[] requestArray = StringUtils.split(headArray[1], "?=&");
         request.setUrl(requestArray[0]);
@@ -73,7 +75,7 @@ public class RequestService {
         request.getParametersUrl().clear();
         request.getHeaders().clear();
         request.setLocation("");
-        request.setMethod("");
+        request.setMethod(null);
         request.setUrl("");
     }
 }

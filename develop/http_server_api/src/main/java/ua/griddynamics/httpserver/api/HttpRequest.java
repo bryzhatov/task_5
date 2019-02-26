@@ -12,8 +12,6 @@ public interface HttpRequest {
 
     String getLocation();
 
-    String getMethod();
-
     String getParameter(String key);
 
     byte[] getBody();

@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.api.Reaction;
+import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.api.Server;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
 import ua.griddynamics.httpserver.pool.ThreadPool;
@@ -35,9 +36,9 @@ import static java.util.Comparator.comparingInt;
 @Log4j
 public class HttpServer implements Server {
     private final ReadWriteLock readWriteLockPatternMap = new ReentrantReadWriteLock(true);
-    private final Map<String, Map<String, Reaction>> reactionMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<RequestMethods, Reaction>> reactionMap = new ConcurrentHashMap<>();
     private final RequestService requestService = new RequestService();
-    private final Map<String, Map<String, Reaction>> patternMap =
+    private final Map<String, Map<RequestMethods, Reaction>> patternMap =
             new TreeMap<>(comparingInt(String::length).reversed());
     private final ServerSocket socketServer = new ServerSocket();
     private final ResponseService responseService;
@@ -105,7 +106,7 @@ public class HttpServer implements Server {
     }
 
     @Override
-    public void addReaction(String url, String method, Reaction reaction) {
+    public void addReaction(String url, RequestMethods method, Reaction reaction) {
         if (StringUtils.countMatches(url, "*") == 1 && StringUtils.endsWith(url, "/*")) {
             url = StringUtils.removeEnd(url, "*");
             Lock writeLock = readWriteLockPatternMap.writeLock();
@@ -121,8 +122,8 @@ public class HttpServer implements Server {
         }
     }
 
-    private void addReaction(Map<String, Map<String, Reaction>> map, String url, String method, Reaction reaction) {
-        Map<String, Reaction> valueReactionMap = map.get(url);
+    private void addReaction(Map<String, Map<RequestMethods, Reaction>> map, String url, RequestMethods method, Reaction reaction) {
+        Map<RequestMethods, Reaction> valueReactionMap = map.get(url);
 
         if (valueReactionMap != null && valueReactionMap.get(method) != null) {
             throw new IllegalArgumentException("Duplicate reaction url: " + url + ", method: " + method);
@@ -153,7 +154,7 @@ public class HttpServer implements Server {
 
         if (path != null) {
             ResourceController resourceController = new ResourceController(path);
-            addReaction("/static/*", "GET", resourceController::getResources);
+            addReaction("/static/*", RequestMethods.GET, resourceController::getResources);
         }
     }
 

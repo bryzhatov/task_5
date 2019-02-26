@@ -1,5 +1,6 @@
 package ua.griddynamics.httpserver;
 
+import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
 
 import java.io.IOException;
@@ -15,8 +16,8 @@ public class App {
         config.setPort(8080);
         HttpServer httpServer = new HttpServer(config);
 
-        httpServer.addReaction("/*", "GET", (request, response) -> System.out.println("Dima"));
-        httpServer.addReaction("/resources/*", "GET", (request, response) -> System.out.println("Il'ya"));
+        httpServer.addReaction("/*", RequestMethods.GET, (request, response) -> System.out.println("Dima"));
+        httpServer.addReaction("/resources/*", RequestMethods.GET, (request, response) -> System.out.println("Il'ya"));
 
         httpServer.deploy();
     }
