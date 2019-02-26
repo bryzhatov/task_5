@@ -7,6 +7,7 @@ import java.io.Reader;
  * @author Dmitry Bryzhatov
  * @since 2019-02-13
  */
+// TODO переписать writer
 public interface HttpResponse {
 
     void write(Reader stream) throws IOException;
@@ -18,4 +19,6 @@ public interface HttpResponse {
     void addHeaderIfAbsent(String key, String value);
 
     String getHeader(String key);
+
+    void setStatus(int status);
 }

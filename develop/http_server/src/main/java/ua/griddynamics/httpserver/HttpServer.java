@@ -19,8 +19,10 @@ import java.net.*;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static java.util.Collections.synchronizedMap;
 import static java.util.Comparator.comparingInt;
 
 /**
@@ -31,8 +33,9 @@ import static java.util.Comparator.comparingInt;
 @Log4j
 public class HttpServer implements Server {
     private final Map<String, Map<String, Reaction>> reactionMap = new ConcurrentHashMap<>();
+    private final ReadWriteLock readWriteLockPatternMap = new ReentrantReadWriteLock(true);
     private final Map<String, Map<String, Reaction>> patternMap =
-            synchronizedMap(new TreeMap<>(comparingInt(String::length).reversed()));
+            new TreeMap<>(comparingInt(String::length).reversed());
     private final RequestService requestService = new RequestService();
     private final ServerSocket socketServer = new ServerSocket();
     private final ResponseService responseService;
@@ -101,7 +104,14 @@ public class HttpServer implements Server {
     public void addReaction(String url, String method, Reaction reaction) {
         if (StringUtils.countMatches(url, "*") == 1 && StringUtils.endsWith(url, "/*")) {
             url = StringUtils.removeEnd(url, "*");
-            addReaction(patternMap, url, method, reaction);
+            Lock writeLock = readWriteLockPatternMap.writeLock();
+            try {
+                writeLock.tryLock();
+                addReaction(patternMap, url, method, reaction);
+            } finally {
+                writeLock.unlock();
+            }
+
         } else {
             addReaction(reactionMap, url, method, reaction);
         }
@@ -111,7 +121,7 @@ public class HttpServer implements Server {
         Map<String, Reaction> valueReactionMap = map.get(url);
 
         if (valueReactionMap != null && valueReactionMap.get(method) != null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Duplicate reaction url: " + url + ", method: " + method);
         }
 
         if (valueReactionMap == null) {
@@ -148,5 +158,9 @@ public class HttpServer implements Server {
         threadPoolDTO.setMaxPoolSize(properties.getMaxKeepAlivePoolSize());
         threadPoolDTO.setKeepAliveTime(properties.getTimeIdleKeepAlivePool());
         return threadPoolDTO;
+    }
+
+    public enum Clas {
+
     }
 }

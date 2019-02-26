@@ -10,6 +10,8 @@ import ua.griddynamics.httpserver.entity.Response;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author Dmitry Bryzhatov
@@ -88,13 +90,18 @@ public class RequestHttpTask extends HttpTask {
     }
 
     private Reaction getReaction(String url, String method) {
-        synchronized (httpServer.getPatternMap()) {
+        Lock readLock = httpServer.getReadWriteLockPatternMap().readLock();
+        try {
+            readLock.tryLock();
             for (Map.Entry<String, Map<String, Reaction>> entry : httpServer.getPatternMap().entrySet()) {
-                if (StringUtils.startsWith(url, entry.getKey())) {
-                    return entry.getValue().get(method);
+                    if (StringUtils.startsWith(url, entry.getKey())) {
+                        return entry.getValue().get(method);
+                    }
                 }
-            }
+        } finally {
+            readLock.unlock();
         }
+
 
         Map<String, Reaction> reactions = httpServer.getReactionMap().get(url);
 

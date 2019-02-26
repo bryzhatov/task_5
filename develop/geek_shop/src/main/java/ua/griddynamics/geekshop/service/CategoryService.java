@@ -30,7 +30,7 @@ public class CategoryService {
 
     public List<Category> getCategories() throws ServiceException {
         try {
-            return categoryRepository.getCategories();
+            return categoryRepository.getAllCategories();
         } catch (DataBaseException e) {
             throw new ServiceException("Can't get all categories", e);
         }

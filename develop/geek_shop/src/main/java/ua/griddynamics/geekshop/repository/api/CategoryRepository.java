@@ -10,7 +10,7 @@ import java.util.List;
  * @since 2019-02-20
  */
 public interface CategoryRepository {
-    List<Category> getCategories() throws DataBaseException;
+    List<Category> getAllCategories() throws DataBaseException;
 
     List<Category> getMainCategories() throws DataBaseException;
 }

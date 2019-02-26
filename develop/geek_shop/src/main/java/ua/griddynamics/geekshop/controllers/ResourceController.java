@@ -26,27 +26,31 @@ public class ResourceController {
 
         if (cacheFile == null) {
             String url = StringUtils.splitByWholeSeparator(request.getUrl(), "/static/")[0];
+
             try (InputStream inputStream = Application.class.getResourceAsStream("/web/static/" + url)) {
-                cacheFile = readAllBytes(inputStream);
-                cache.put(url, cacheFile);
+                if (inputStream != null) {
+                    cacheFile = readAllBytes(inputStream);
+
+                    cache.put(url, cacheFile);
+                    response.write(new String(cacheFile));
+                } else {
+//                    response.setStatus(404);
+                    response.write("Can't find static resource: " + url);
+                }
             } catch (IOException e) {
-                // TODO code, message
                 log.error("");
             }
+        } else {
+            response.write(new String(cacheFile));
         }
-
-        response.write(new String(cacheFile));
     }
 
-    private byte[] readAllBytes(InputStream stream) {
+    private byte[] readAllBytes(InputStream stream) throws IOException {
         List<Byte> list = new ArrayList<>();
         int i;
-        try {
-            while ((i = stream.read()) != -1) {
-                list.add((byte) i);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        while ((i = stream.read()) != -1) {
+            list.add((byte) i);
         }
 
         byte[] mass = new byte[list.size()];

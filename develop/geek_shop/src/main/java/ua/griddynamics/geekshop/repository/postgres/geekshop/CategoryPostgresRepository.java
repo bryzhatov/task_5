@@ -21,7 +21,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
     }
 
     @Override
-    public List<Category> getCategories() throws DataBaseException {
+    public List<Category> getAllCategories() throws DataBaseException {
         List<Category> categories = new ArrayList<>();
 
         try (Connection connection = connectionSupplier.get()) {
