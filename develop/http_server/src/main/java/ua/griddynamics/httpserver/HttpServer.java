@@ -108,7 +108,7 @@ public class HttpServer implements Server {
             url = StringUtils.removeEnd(url, "*");
             Lock writeLock = lockPatternMap.writeLock();
             try {
-                writeLock.tryLock();
+                writeLock.lock();
                 addReaction(patternMap, url, method, reaction);
             } finally {
                 writeLock.unlock();

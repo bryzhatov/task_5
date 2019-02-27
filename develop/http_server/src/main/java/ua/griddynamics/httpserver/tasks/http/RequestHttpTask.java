@@ -83,7 +83,7 @@ public class RequestHttpTask extends HttpTask {
                 response.setStatus(405);
                 httpServer.getResponseService().respond(request, response);
             } catch (IOException e1) {
-                e1.printStackTrace();
+                log.error("Can't response about error: ", e1);
             }
         }
     }
@@ -103,7 +103,7 @@ public class RequestHttpTask extends HttpTask {
     private Reaction getReaction(Request request, RequestMethods method) {
         Lock readLock = httpServer.getLockPatternMap().readLock();
         try {
-            readLock.tryLock();
+            readLock.lock();
             for (Map.Entry<String, Map<RequestMethods, Reaction>> entry : httpServer.getPatternMap().entrySet()) {
                 if (StringUtils.startsWith(request.getUrl(), entry.getKey())) {
                     request.setPathInfo(StringUtils.removeStart(request.getUrl(), entry.getKey()));
