@@ -16,11 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2019-02-21
  */
 @Log4j
-public class ResourceController {
+public class StaticResourceController {
     private final Map<String, byte[]> cache = new ConcurrentHashMap<>();
     private final Path staticResDir;
 
-    public ResourceController(Path staticResDir) {
+    public StaticResourceController(Path staticResDir) {
         this.staticResDir = staticResDir;
     }
 

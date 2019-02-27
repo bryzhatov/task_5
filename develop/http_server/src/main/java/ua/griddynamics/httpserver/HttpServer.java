@@ -4,9 +4,9 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.api.Reaction;
-import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.api.Server;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
+import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.pool.ThreadPool;
 import ua.griddynamics.httpserver.pool.factory.ThreadPoolFactory;
 import ua.griddynamics.httpserver.pool.util.ThreadPoolDTO;
@@ -14,14 +14,13 @@ import ua.griddynamics.httpserver.properties.HttpServerProperties;
 import ua.griddynamics.httpserver.service.RequestService;
 import ua.griddynamics.httpserver.service.ResponseService;
 import ua.griddynamics.httpserver.tasks.http.RequestHttpTask;
-import ua.griddynamics.httpserver.utils.controllers.ResourceController;
 
 import java.io.IOException;
 import java.net.*;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -35,8 +34,8 @@ import static java.util.Comparator.comparingInt;
 @Data
 @Log4j
 public class HttpServer implements Server {
-    private final ReadWriteLock readWriteLockPatternMap = new ReentrantReadWriteLock(true);
     private final Map<String, Map<RequestMethods, Reaction>> reactionMap = new ConcurrentHashMap<>();
+    private final ReadWriteLock lockPatternMap = new ReentrantReadWriteLock(true);
     private final RequestService requestService = new RequestService();
     private final Map<String, Map<RequestMethods, Reaction>> patternMap =
             new TreeMap<>(comparingInt(String::length).reversed());
@@ -55,8 +54,6 @@ public class HttpServer implements Server {
                 .getPool(propServer.getPoolType());
         requestThreadPool = new ThreadPoolFactory(getRequestPoolDTO(propServer))
                 .getPool(propServer.getPoolType());
-
-        tryInitResourceController();
     }
 
     @Override
@@ -64,7 +61,11 @@ public class HttpServer implements Server {
         try {
             socketServer.bind(new InetSocketAddress(propServer.getHost(), propServer.getPort()));
             log.info("Deployed by: " + propServer.getHost() + ":" + propServer.getPort());
+            // TODO константа
             socketServer.setSoTimeout(1000);
+
+            new CopyOnWriteArrayList<>();
+
         } catch (SocketException e) {
             log.error("Error when set time out for server: " + e);
         } catch (IOException e) {
@@ -72,9 +73,8 @@ public class HttpServer implements Server {
         }
 
         while (!Thread.currentThread().isInterrupted()) {
-            Socket connection = null;
             try {
-                connection = socketServer.accept();
+                Socket connection = socketServer.accept();
 
                 RequestHttpTask requestHttpTask = new RequestHttpTask(this, connection);
                 requestThreadPool.handle(requestHttpTask);
@@ -85,7 +85,6 @@ public class HttpServer implements Server {
                 }
             } catch (IOException e) {
                 log.error("Error with new connection: " + e);
-                connectionClose(connection);
             }
         }
     }
@@ -109,7 +108,7 @@ public class HttpServer implements Server {
     public void addReaction(String url, RequestMethods method, Reaction reaction) {
         if (StringUtils.countMatches(url, "*") == 1 && StringUtils.endsWith(url, "/*")) {
             url = StringUtils.removeEnd(url, "*");
-            Lock writeLock = readWriteLockPatternMap.writeLock();
+            Lock writeLock = lockPatternMap.writeLock();
             try {
                 writeLock.tryLock();
                 addReaction(patternMap, url, method, reaction);
@@ -134,27 +133,6 @@ public class HttpServer implements Server {
         }
 
         valueReactionMap.put(method, reaction);
-    }
-
-    private void connectionClose(Socket connection) {
-        if (connection != null && !connection.isClosed()) {
-            try {
-                connection.getOutputStream().close();
-                connection.getInputStream().close();
-                connection.close();
-            } catch (IOException se) {
-                log.error("Error with close socket connection: " + se);
-            }
-        }
-    }
-
-    private void tryInitResourceController() {
-        Path path = propServer.getStaticFolder();
-
-        if (path != null) {
-            ResourceController resourceController = new ResourceController(path);
-            addReaction("/static/*", RequestMethods.GET, resourceController::getResources);
-        }
     }
 
     private ThreadPoolDTO getRequestPoolDTO(HttpServerProperties properties) {

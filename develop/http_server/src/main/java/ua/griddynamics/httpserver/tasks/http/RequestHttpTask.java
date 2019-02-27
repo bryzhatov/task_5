@@ -90,7 +90,7 @@ public class RequestHttpTask extends HttpTask {
     }
 
     private Reaction getReaction(String url, RequestMethods method) {
-        Lock readLock = httpServer.getReadWriteLockPatternMap().readLock();
+        Lock readLock = httpServer.getLockPatternMap().readLock();
         try {
             readLock.tryLock();
             for (Map.Entry<String, Map<RequestMethods, Reaction>> entry : httpServer.getPatternMap().entrySet()) {

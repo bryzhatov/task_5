@@ -3,7 +3,6 @@ package ua.griddynamics.httpserver.api.config;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -18,11 +17,6 @@ public class HttpServerConfig extends Properties {
         putAll(properties);
     }
 
-    public HttpServerConfig setStaticFolder(Path staticFolder) {
-        this.put(ServerKeysConfig.STATIC_FOLDER, staticFolder);
-        return this;
-    }
-
     public HttpServerConfig setHost(String host) {
         this.setProperty(ServerKeysConfig.HOST, host);
         return this;
@@ -30,6 +24,11 @@ public class HttpServerConfig extends Properties {
 
     public HttpServerConfig setPort(int port) {
         this.setProperty(ServerKeysConfig.PORT, Integer.toString(port));
+        return this;
+    }
+
+    public HttpServerConfig setUrlStaticResouruse(String prefix) {
+        this.setProperty(ServerKeysConfig.STATIC_RESOURCE_PREFIX, prefix);
         return this;
     }
 

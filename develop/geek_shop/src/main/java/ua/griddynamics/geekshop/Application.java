@@ -9,10 +9,11 @@ import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
+import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
@@ -23,7 +24,7 @@ import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
  */
 @Log4j
 public class Application {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
         Properties properties = getProperties("app/app.properties");
 
         GeekShopConnectionProvider geekShopConnectionProvider = new GeekShopConnectionProvider(properties);
@@ -32,20 +33,17 @@ public class Application {
 
         PageController pageController = new PageController(categoryService,
                 new FreemarkerTemplate("/web"));
+
         CategoryController categoryController = new CategoryController(categoryService);
 
         HttpServerConfig config = new HttpServerConfig()
-                //TODO prefix
-                .setStaticFolder(Paths.get("classpath:web/static"))
-                .setStaticFolder(Paths.get("file:/web/static"))
                 .setPort(8080);
 
         HttpServer httpServer = new HttpServer(config);
-
         httpServer.addReaction("/", GET, pageController::getIndex);
         httpServer.addReaction("/v1/categories", GET, categoryController::getCategories);
         httpServer.addReaction("/v1/categories/main", GET, categoryController::getMainCategories);
-
+        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static")::getResources);
         httpServer.deploy();
     }
 

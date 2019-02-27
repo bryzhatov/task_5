@@ -16,7 +16,8 @@ public class ServerKeysConfig {
     public static final String KEEP_ALIVE_TIME = "keep_alive_time_out";
     public static final String KEEP_ALIVE_TRANSACTIONAL = "keep_alive_count_transactional";
     public static final String POOL_TYPE = "pool_type";
-    public static final String STATIC_FOLDER = "static_folder";
+    public static final String STATIC_RESOURCE_PREFIX = "static_resource_prefix";
+    public static final String STATIC_RECOURSE_FOLDER = "static_resource_folder";
 
     // Request Pool
     public static final String CORE_REQUEST_POOL_SIZE = "core_request_pool_size";

@@ -26,7 +26,7 @@ public class ServerProperties {
     }
 
     public Path getStaticFolder() {
-        return (Path) innerProperty.get(ServerKeysConfig.STATIC_FOLDER);
+        return (Path) innerProperty.get(ServerKeysConfig.STATIC_RECOURSE_FOLDER);
     }
 
     public boolean isVisibleRequest() {
