@@ -92,10 +92,10 @@ public class ResponseService {
 
     private class ErrorPage {
         String getErrorPage(int status) {
-            return "<html><title></title><body>" +
+            return "<html><title></title><body><h1><b>" +
                     status + " " +
                     httpCodes.getMessage(status) +
-                    "</body></html>";
+                    "</b><h1></body></html>";
         }
     }
 }

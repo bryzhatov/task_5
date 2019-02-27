@@ -5,8 +5,6 @@ import org.postgresql.ds.PGConnectionPoolDataSource;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 
 import javax.sql.PooledConnection;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -44,7 +42,7 @@ public class GeekShopConnectionProvider implements Supplier<Connection> {
             return dataSource.getPooledConnection();
         } catch (SQLException e) {
             log.error("Can't get pooled of connections: " + e);
+            throw new DataBaseException("Error with connection of data base.", e);
         }
-        return null;
     }
 }

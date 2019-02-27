@@ -23,6 +23,7 @@ public class HttpCodes {
         config.put(403, "Forbidden");
         config.put(404, "Not Found");
         config.put(405, "Method Not Allowed");
+        config.put(500, "Internal Server Error");
         config.put(501, "Not Implemented");
         config.put(505, "HTTP Version Not Supported");
     }
