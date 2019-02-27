@@ -10,6 +10,6 @@ import java.nio.file.Paths;
 public class StaticControllerFactory {
 
     public static StaticResourceController classpath(String path) throws URISyntaxException {
-        return new StaticResourceController(Paths.get(path.getClass().getResource("/web/static").toURI()));
+        return new StaticResourceController(Paths.get(path.getClass().getResource(path).toURI()));
     }
 }
