@@ -21,6 +21,7 @@ public class Request implements HttpRequest {
     private final BufferedWriter writerStream;
     private final Socket connection;
     private RequestMethods method;
+    private String pathInfo;
     private String location;
     private byte[] body;
     private String url;

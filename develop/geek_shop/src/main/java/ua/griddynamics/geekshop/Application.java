@@ -44,6 +44,7 @@ public class Application {
         httpServer.addReaction("/v1/categories", GET, categoryController::getCategories);
         httpServer.addReaction("/v1/categories/main", GET, categoryController::getMainCategories);
         httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static")::getResources);
+        httpServer.addReaction("/static/at/*", GET, StaticControllerFactory.classpath("/other/static")::getResources);
         httpServer.deploy();
     }
 

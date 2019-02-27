@@ -26,10 +26,8 @@ public class StaticResourceController {
 
     public void getResources(HttpRequest request, HttpResponse response) {
         try {
-            String findResName = StringUtils.splitByWholeSeparator(request.getUrl(), "/static/")[0];
-
             byte[] byteFile;
-            byteFile = cache.get(findResName);
+            byteFile = cache.get(request.getPathInfo());
 
             if (byteFile != null) {
                 response.write(new String(byteFile));
@@ -38,10 +36,10 @@ public class StaticResourceController {
                         .filter(Files::isRegularFile)
                         .forEach((path) ->
                         {
-                            if (path.toString().endsWith(findResName)) {
+                            if (path.toString().endsWith(request.getPathInfo())) {
                                 try {
                                     byte[] temp = Files.readAllBytes(path);
-                                    cacheFile(findResName, temp);
+                                    cacheFile(request.getPathInfo(), temp);
                                     response.write(new String(temp));
                                 } catch (IOException e) {
                                     log.error("Can't read bytes from resource", e);

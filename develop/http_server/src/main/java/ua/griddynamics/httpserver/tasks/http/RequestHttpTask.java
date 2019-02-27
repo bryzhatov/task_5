@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * @author Dmitry Bryzhatov
@@ -80,7 +81,7 @@ public class RequestHttpTask extends HttpTask {
     private void returnResponse(Request request) throws IOException {
         Response response = new Response(request);
 
-        Reaction reaction = getReaction(request.getUrl(), request.getMethod());
+        Reaction reaction = getReaction(request, request.getMethod());
 
         if (reaction != null) {
             reaction.react(request, response);
@@ -89,12 +90,13 @@ public class RequestHttpTask extends HttpTask {
         httpServer.getResponseService().respond(request, response);
     }
 
-    private Reaction getReaction(String url, RequestMethods method) {
+    private Reaction getReaction(Request request, RequestMethods method) {
         Lock readLock = httpServer.getLockPatternMap().readLock();
         try {
             readLock.tryLock();
             for (Map.Entry<String, Map<RequestMethods, Reaction>> entry : httpServer.getPatternMap().entrySet()) {
-                    if (StringUtils.startsWith(url, entry.getKey())) {
+                    if (StringUtils.startsWith(request.getUrl(), entry.getKey())) {
+                        request.setPathInfo(StringUtils.removeStart(request.getUrl(), entry.getKey()));
                         return entry.getValue().get(method);
                     }
                 }
@@ -102,8 +104,7 @@ public class RequestHttpTask extends HttpTask {
             readLock.unlock();
         }
 
-
-        Map<RequestMethods, Reaction> reactions = httpServer.getReactionMap().get(url);
+        Map<RequestMethods, Reaction> reactions = httpServer.getReactionMap().get(request.getUrl());
 
         if (reactions != null) {
             return reactions.get(method);

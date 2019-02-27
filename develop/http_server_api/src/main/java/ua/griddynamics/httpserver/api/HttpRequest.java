@@ -21,4 +21,6 @@ public interface HttpRequest {
     Map<String, String> getHeaders();
 
     Map<String, String> getParametersUrl();
+
+    String getPathInfo();
 }

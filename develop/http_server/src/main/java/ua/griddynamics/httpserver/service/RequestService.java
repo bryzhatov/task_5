@@ -75,6 +75,7 @@ public class RequestService {
         request.getParametersUrl().clear();
         request.getHeaders().clear();
         request.setLocation("");
+        request.setPathInfo("");
         request.setMethod(null);
         request.setUrl("");
     }
