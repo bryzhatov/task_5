@@ -53,7 +53,7 @@ public class ResponseService {
         } else {
             response.addHeaderIfAbsent("Connection", "close");
         }
-        response.addHeaderIfAbsent("Content-Length", String.valueOf(response.getWriter().toString().getBytes().length + 2));
+        response.addHeaderIfAbsent("Content-Length", String.valueOf(getBody(response).getBytes().length + 2));
         response.addHeaderIfAbsent("Date", threadLocal.get().format(LocalDateTime.now()));
         response.addHeaderIfAbsent("Location", request.getLocation());
         response.addHeaderIfAbsent("Server", "Anton/0.1");
@@ -73,11 +73,7 @@ public class ResponseService {
         headersBuilder.append("\r\n\r\n");
         writer.write(headersBuilder.toString());
 
-        if (response.getWriter().getBuffer().length() > 0) {
-            writer.write(response.getWriter().toString());
-        } else {
-            writer.write(errorPage.getErrorPage(response.getStatus()));
-        }
+        writer.write(getBody(response));
 
         if (!request.getConnection().isClosed()) {
             writer.flush();
@@ -86,8 +82,16 @@ public class ResponseService {
         }
     }
 
+    private String getBody(Response response) {
+        if (response.getWriter().getBuffer().length() > 0) {
+            return response.getWriter().toString();
+        } else {
+            return errorPage.getErrorPage(response.getStatus());
+        }
+    }
+
     private class ErrorPage {
-        public String getErrorPage(int status) {
+        String getErrorPage(int status) {
             return "<html><title></title><body>" +
                     status + " " +
                     httpCodes.getMessage(status) +

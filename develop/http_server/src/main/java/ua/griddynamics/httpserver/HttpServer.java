@@ -64,8 +64,6 @@ public class HttpServer implements Server {
             // TODO константа
             socketServer.setSoTimeout(1000);
 
-            new CopyOnWriteArrayList<>();
-
         } catch (SocketException e) {
             log.error("Error when set time out for server: " + e);
         } catch (IOException e) {

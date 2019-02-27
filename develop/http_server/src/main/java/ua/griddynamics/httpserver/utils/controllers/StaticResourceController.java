@@ -1,7 +1,6 @@
 package ua.griddynamics.httpserver.utils.controllers;
 
 import lombok.extern.log4j.Log4j;
-import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 

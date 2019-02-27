@@ -7,12 +7,12 @@ import ua.griddynamics.httpserver.api.Reaction;
 import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.entity.Request;
 import ua.griddynamics.httpserver.entity.Response;
+import ua.griddynamics.httpserver.exception.ServerException;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * @author Dmitry Bryzhatov
@@ -43,38 +43,48 @@ public class RequestHttpTask extends HttpTask {
 
     @Override
     public void doTask() {
-        if (request == null) {
-            try {
-                request = new Request(connection);
-                connection.setKeepAlive(true);
-                connection.setSoTimeout(emptyRequestTimeOut);
-                httpServer.getRequestService().parse(request);
-            } catch (IOException e) {
-                log.debug(Thread.currentThread().getName() + ": Error when parsing request: " + e);
-            }
-        }
-
-        if (request.isCorrect()) {
-            if (httpServer.getPropServer().isVisibleRequest()) {
-                log.info(request.getMethod().name() + " " + request.getUrl());
+        try {
+            if (request == null) {
+                try {
+                    request = new Request(connection);
+                    connection.setKeepAlive(true);
+                    connection.setSoTimeout(emptyRequestTimeOut);
+                    httpServer.getRequestService().parse(request);
+                } catch (IOException e) {
+                    log.debug("Error when parsing request", e);
+                }
             }
 
-            try {
-                returnResponse(request);
+            if (request.isCorrect()) {
+                if (httpServer.getPropServer().isVisibleRequest()) {
+                    log.info(request.getMethod().name() + " " + request.getUrl());
+                }
 
-                if (request.isClose()) {
+                try {
+                    returnResponse(request);
+
+                    if (request.isClose()) {
+                        closeConnection(request);
+                    }
+
+                    if (serverKeepAlive && request.isKeepAlive()) {
+                        httpServer.getKeepAliveThreadPool().handle(new KeepAliveHttpTask(httpServer, request));
+                    }
+                } catch (IOException e) {
+                    log.error("Error when response: " + e);
                     closeConnection(request);
                 }
-
-                if (serverKeepAlive && request.isKeepAlive()) {
-                    httpServer.getKeepAliveThreadPool().handle(new KeepAliveHttpTask(httpServer, request));
-                }
-            } catch (IOException e) {
-                log.error("Error when response: " + e);
-                closeConnection(request);
+            } else {
+                log.debug("Request is not correct: " + request);
             }
-        } else {
-            log.debug("Request is not correct: " + request);
+        } catch (ServerException e) {
+            try {
+                Response response = new Response(request);
+                response.setStatus(405);
+                httpServer.getResponseService().respond(request, response);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
@@ -95,11 +105,11 @@ public class RequestHttpTask extends HttpTask {
         try {
             readLock.tryLock();
             for (Map.Entry<String, Map<RequestMethods, Reaction>> entry : httpServer.getPatternMap().entrySet()) {
-                    if (StringUtils.startsWith(request.getUrl(), entry.getKey())) {
-                        request.setPathInfo(StringUtils.removeStart(request.getUrl(), entry.getKey()));
-                        return entry.getValue().get(method);
-                    }
+                if (StringUtils.startsWith(request.getUrl(), entry.getKey())) {
+                    request.setPathInfo(StringUtils.removeStart(request.getUrl(), entry.getKey()));
+                    return entry.getValue().get(method);
                 }
+            }
         } finally {
             readLock.unlock();
         }

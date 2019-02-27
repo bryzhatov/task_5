@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.entity.Request;
+import ua.griddynamics.httpserver.exception.ServerException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +35,11 @@ public class RequestService {
     private void parseStatusLine(Request request, String head) {
         String[] headArray = StringUtils.split(head, " ");
 
-        request.setMethod(RequestMethods.get(headArray[0]));
+        try {
+            request.setMethod(RequestMethods.valueOf(headArray[0]));
+        } catch (IllegalArgumentException e){
+            throw new ServerException("Http method like this: " + headArray[0] + " is not supported.", e, 405);
+        }
 
         String[] requestArray = StringUtils.split(headArray[1], "?=&");
         request.setUrl(requestArray[0]);
