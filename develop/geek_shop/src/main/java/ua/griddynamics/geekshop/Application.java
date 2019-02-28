@@ -1,7 +1,7 @@
 package ua.griddynamics.geekshop;
 
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.geekshop.controllers.GetIndexPageController;
+import ua.griddynamics.geekshop.controllers.page.GetIndexPageController;
 import ua.griddynamics.geekshop.controllers.rest.GetMainCategoriesController;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.CategoryPostgresRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;

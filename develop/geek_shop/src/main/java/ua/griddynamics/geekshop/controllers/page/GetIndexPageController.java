@@ -1,4 +1,4 @@
-package ua.griddynamics.geekshop.controllers;
+package ua.griddynamics.geekshop.controllers.page;
 
 import freemarker.template.TemplateException;
 import lombok.Setter;
