@@ -36,15 +36,14 @@ public class Application {
 
         CategoryController categoryController = new CategoryController(categoryService);
 
-        HttpServerConfig config = new HttpServerConfig()
-                .setPort(8080);
+        HttpServerConfig config = new HttpServerConfig(properties);
 
         HttpServer httpServer = new HttpServer(config);
         httpServer.addReaction("/", GET, pageController::getIndex);
         httpServer.addReaction("/v1/categories", GET, categoryController::getCategories);
         httpServer.addReaction("/v1/categories/main", GET, categoryController::getMainCategories);
-        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static")::getResources);
-        httpServer.addReaction("/static/at/*", GET, StaticControllerFactory.classpath("/other/static")::getResources);
+        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static"));
+        httpServer.addReaction("/static/at/*", GET, StaticControllerFactory.classpath("/other/static"));
         httpServer.deploy();
     }
 
@@ -54,7 +53,6 @@ public class Application {
         try (InputStream resourceStream = loader.getResourceAsStream(name)) {
             properties.load(resourceStream);
         } catch (IOException e) {
-            //TODO fatal
             log.fatal("Can't load DB properties", e);
         }
         return properties;

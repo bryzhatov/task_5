@@ -7,7 +7,6 @@ import java.io.Reader;
  * @author Dmitry Bryzhatov
  * @since 2019-02-13
  */
-// TODO переписать writer
 public interface HttpResponse {
 
     void write(Reader stream) throws IOException;

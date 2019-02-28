@@ -80,10 +80,10 @@ public class RequestHttpTask extends HttpTask {
         } catch (ServerException e) {
             try {
                 Response response = new Response(request);
-                response.setStatus(405);
+                response.setStatus(e.getStatusCode());
                 httpServer.getResponseService().respond(request, response);
             } catch (IOException e1) {
-                log.error("Can't response about error: ", e1);
+                log.error("Can't response about error", e1);
             }
         }
     }
@@ -105,8 +105,11 @@ public class RequestHttpTask extends HttpTask {
         try {
             readLock.lock();
             for (Map.Entry<String, Map<RequestMethods, Reaction>> entry : httpServer.getPatternMap().entrySet()) {
+
                 if (StringUtils.startsWith(request.getUrl(), entry.getKey())) {
+
                     request.setPathInfo(StringUtils.removeStart(request.getUrl(), entry.getKey()));
+
                     return entry.getValue().get(method);
                 }
             }

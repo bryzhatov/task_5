@@ -3,6 +3,7 @@ package ua.griddynamics.httpserver.utils.controllers;
 import lombok.extern.log4j.Log4j;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
+import ua.griddynamics.httpserver.api.Reaction;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2019-02-21
  */
 @Log4j
-public class StaticResourceController {
+public class StaticResourceController implements Reaction {
     private final Map<String, byte[]> cache = new ConcurrentHashMap<>();
     private final Path staticResDir;
 
@@ -23,7 +24,8 @@ public class StaticResourceController {
         this.staticResDir = staticResDir;
     }
 
-    public void getResources(HttpRequest request, HttpResponse response) {
+    @Override
+    public void react(HttpRequest request, HttpResponse response) {
         try {
             byte[] byteFile;
             byteFile = cache.get(request.getPathInfo());
