@@ -1,8 +1,8 @@
 package ua.griddynamics.geekshop;
 
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.geekshop.controllers.PageController;
-import ua.griddynamics.geekshop.controllers.rest.CategoryController;
+import ua.griddynamics.geekshop.controllers.GetIndexPageController;
+import ua.griddynamics.geekshop.controllers.rest.GetMainCategoriesController;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.CategoryPostgresRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
@@ -25,32 +25,26 @@ import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
 @Log4j
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
-        Properties properties = getProperties("app/app.properties");
+        Properties properties = getProperties();
 
         GeekShopConnectionProvider geekShopConnectionProvider = new GeekShopConnectionProvider(properties);
         CategoryPostgresRepository categoryPostgresRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
         CategoryService categoryService = new CategoryService(categoryPostgresRepository);
 
-        PageController pageController = new PageController(categoryService,
-                new FreemarkerTemplate("/web"));
-
-        CategoryController categoryController = new CategoryController(categoryService);
-
         HttpServerConfig config = new HttpServerConfig(properties);
 
         HttpServer httpServer = new HttpServer(config);
-        httpServer.addReaction("/", GET, pageController::getIndex);
-        httpServer.addReaction("/v1/categories", GET, categoryController::getCategories);
-        httpServer.addReaction("/v1/categories/main", GET, categoryController::getMainCategories);
+        httpServer.addReaction("/", GET, new GetIndexPageController(categoryService, new FreemarkerTemplate("/web")));
+        httpServer.addReaction("/v1/categories/main", GET, new GetMainCategoriesController(categoryService));
         httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static"));
         httpServer.addReaction("/static/at/*", GET, StaticControllerFactory.classpath("/other/static"));
         httpServer.deploy();
     }
 
-    private static Properties getProperties(String name) {
+    private static Properties getProperties() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Properties properties = new Properties();
-        try (InputStream resourceStream = loader.getResourceAsStream(name)) {
+        try (InputStream resourceStream = loader.getResourceAsStream("app/app.properties")) {
             properties.load(resourceStream);
         } catch (IOException e) {
             log.fatal("Can't load DB properties", e);

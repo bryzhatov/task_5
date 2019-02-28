@@ -8,34 +8,23 @@ import ua.griddynamics.geekshop.exception.ServiceException;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
+import ua.griddynamics.httpserver.api.Reaction;
 
 /**
  * @author Dmitry Bryzhatov
  * @since 2019-02-21
  */
 @Log4j
-public class CategoryController {
+public class GetMainCategoriesController implements Reaction {
     @Setter
     private CategoryService categoryService;
 
-    public CategoryController(CategoryService categoryService) {
+    public GetMainCategoriesController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
-    public void getCategories(HttpRequest request, HttpResponse response) {
-        Gson gson = new Gson();
-        try {
-
-            String jsonCategory = gson.toJson(categoryService.getCategories());
-            response.write(jsonCategory);
-
-        } catch (AppException e) {
-            log.error(e);
-            response.setStatus(500);
-        }
-    }
-
-    public void getMainCategories(HttpRequest request, HttpResponse response) {
+    @Override
+    public void react(HttpRequest request, HttpResponse response) {
         Gson gson = new Gson();
         try {
 
