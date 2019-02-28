@@ -49,7 +49,7 @@ public class RequestHttpTask extends HttpTask {
                 connection.setSoTimeout(emptyRequestTimeOut);
                 httpServer.getRequestService().parse(request);
             } catch (IOException e) {
-                log.debug("Error when parsing request", e);
+                log.debug("Error when parsing request.", e);
             }
         }
 
@@ -71,7 +71,7 @@ public class RequestHttpTask extends HttpTask {
             try {
                 httpServer.getResponseService().respond(request, response);
             } catch (IOException e) {
-                log.error("Can't get response", e);
+                log.error("Can't get response.", e);
                 closeConnection(request);
             }
 

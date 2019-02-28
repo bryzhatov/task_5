@@ -41,7 +41,7 @@ public class GeekShopConnectionProvider implements Supplier<Connection> {
 
             return dataSource.getPooledConnection();
         } catch (SQLException e) {
-            log.error("Can't get pooled of connections: " + e);
+            log.error("Can't get pooled of connections.", e);
             throw new DataBaseException("Error with connection of data base.", e);
         }
     }

@@ -117,7 +117,7 @@ public class ServerThreadPool extends ThreadPool {
                 this.task = task;
                 WAIT_MONITOR.signal();
             } catch (InterruptedException e) {
-                log.error("Can't lock monitor: " + e);
+                log.error("Can't lock monitor.", e);
             } finally {
                 WAIT.unlock();
             }

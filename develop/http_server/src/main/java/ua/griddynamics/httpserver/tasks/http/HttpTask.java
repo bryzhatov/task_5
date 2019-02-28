@@ -16,7 +16,7 @@ public abstract class HttpTask implements Task {
     protected final HttpServer httpServer;
     protected final int keepAliveTimeOut;
 
-    protected HttpTask(HttpServer httpServer){
+    protected HttpTask(HttpServer httpServer) {
         this.keepAliveTimeOut = httpServer.getPropServer().getKeepAliveTimeout();
         this.httpServer = httpServer;
     }
@@ -27,7 +27,7 @@ public abstract class HttpTask implements Task {
             request.getWriterStream().close();
             request.getConnection().close();
         } catch (IOException e) {
-            log.error("Error when close connection: " + e);
+            log.error("Error when close connection.", e);
         }
     }
 }

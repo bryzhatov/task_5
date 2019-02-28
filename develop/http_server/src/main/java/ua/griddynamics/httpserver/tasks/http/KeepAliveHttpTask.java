@@ -35,11 +35,11 @@ public class KeepAliveHttpTask extends HttpTask {
                     httpServer.getRequestThreadPool().handle(new RequestHttpTask(httpServer, request));
                 }
             } catch (IOException e) {
-                log.debug("Error when blocking on I/O operation: " + e);
+                log.debug("Error when blocking on I/O operation.", e);
                 closeConnection(request);
             }
         } catch (SocketException e) {
-            log.error("Error when setting keep-alive for connection: " + e);
+            log.error("Error when setting keep-alive for connection.", e);
             closeConnection(request);
         }
     }

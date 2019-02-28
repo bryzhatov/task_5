@@ -20,7 +20,7 @@ public class DefaultServerProperties extends ServerProperties {
             initDefaultProperty();
         } catch (IOException e) {
             initDefaultProperty();
-            log.debug("Can't load properties file for server: " + e);
+            log.debug("Can't load properties file for server.", e);
         }
     }
 

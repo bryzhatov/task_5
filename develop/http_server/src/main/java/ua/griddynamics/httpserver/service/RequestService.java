@@ -37,7 +37,7 @@ public class RequestService {
 
         try {
             request.setMethod(RequestMethods.valueOf(headArray[0]));
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new ServerException("Http method like this: " + headArray[0] + " is not supported.", e, 405);
         }
 
@@ -58,7 +58,7 @@ public class RequestService {
                 headers.put(splitHeader[0].trim(), splitHeader[1].trim());
             }
         } catch (IOException e) {
-            log.error("Error while parse headers: " + e);
+            log.error("Error while parse headers.", e);
         }
     }
 
@@ -72,7 +72,7 @@ public class RequestService {
             request.setBody(body.toString().getBytes());
 
         } catch (IOException e) {
-            log.error("Can't parse body of request:" + e);
+            log.error("Can't parse body of request.", e);
         }
     }
 

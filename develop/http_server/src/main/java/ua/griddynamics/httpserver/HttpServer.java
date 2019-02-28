@@ -63,9 +63,9 @@ public class HttpServer implements Server {
             socketServer.setSoTimeout(propServer.getEmptyRequestTimeOut());
 
         } catch (SocketException e) {
-            log.error("Error when set time out for server: " + e);
+            log.error("Error when set time out for server.", e);
         } catch (IOException e) {
-            log.error("Error deploy: " + e);
+            log.error("Error deploy.", e);
         }
 
         while (!Thread.currentThread().isInterrupted()) {
@@ -80,7 +80,7 @@ public class HttpServer implements Server {
                     close();
                 }
             } catch (IOException e) {
-                log.error("Error with new connection: " + e);
+                log.error("Error with new connection.", e);
             }
         }
     }
@@ -96,7 +96,7 @@ public class HttpServer implements Server {
             }
             log.info("HttpServer by http:/" + socketServer.getLocalSocketAddress() + " was closed.");
         } catch (IOException e) {
-            log.error("Error when close HttpServer: " + e);
+            log.error("Error when close HttpServer.", e);
         }
     }
 
