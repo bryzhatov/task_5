@@ -41,7 +41,7 @@ public class Request implements HttpRequest {
         return value != null && value.equalsIgnoreCase("keep-alive");
     }
 
-    public boolean isClose() {
+    public boolean isCloseConnection() {
         String value = headers.get("Connection");
         return value != null && value.equalsIgnoreCase("close");
     }

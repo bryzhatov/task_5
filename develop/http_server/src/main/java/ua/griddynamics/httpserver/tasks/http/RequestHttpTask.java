@@ -7,7 +7,6 @@ import ua.griddynamics.httpserver.api.Reaction;
 import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.entity.Request;
 import ua.griddynamics.httpserver.entity.Response;
-import ua.griddynamics.httpserver.exception.ServerException;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -43,61 +42,58 @@ public class RequestHttpTask extends HttpTask {
 
     @Override
     public void doTask() {
-        try {
-            if (request == null) {
-                try {
-                    request = new Request(connection);
-                    connection.setKeepAlive(true);
-                    connection.setSoTimeout(emptyRequestTimeOut);
-                    httpServer.getRequestService().parse(request);
-                } catch (IOException e) {
-                    log.debug("Error when parsing request", e);
-                }
-            }
-
-            if (request.isCorrect()) {
-                if (httpServer.getPropServer().isVisibleRequest()) {
-                    log.info(request.getMethod().name() + " " + request.getUrl());
-                }
-
-                try {
-                    returnResponse(request);
-
-                    if (request.isClose()) {
-                        closeConnection(request);
-                    }
-
-                    if (serverKeepAlive && request.isKeepAlive()) {
-                        httpServer.getKeepAliveThreadPool().handle(new KeepAliveHttpTask(httpServer, request));
-                    }
-                } catch (IOException e) {
-                    log.error("Error when response: " + e);
-                    closeConnection(request);
-                }
-            } else {
-                log.debug("Request is not correct: " + request);
-            }
-        } catch (ServerException e) {
+        if (request == null) {
             try {
-                Response response = new Response(request);
-                response.setStatus(e.getStatusCode());
-                httpServer.getResponseService().respond(request, response);
-            } catch (IOException e1) {
-                log.error("Can't response about error", e1);
+                request = new Request(connection);
+                connection.setKeepAlive(true);
+                connection.setSoTimeout(emptyRequestTimeOut);
+                httpServer.getRequestService().parse(request);
+            } catch (IOException e) {
+                log.debug("Error when parsing request", e);
             }
+        }
+
+        if (request.isCorrect()) {
+            if (httpServer.getPropServer().isVisibleRequest()) {
+                log.info(request.getMethod().name() + " " + request.getUrl());
+            }
+
+            Response response = new Response(request);
+            try {
+                executeReaction(response);
+            } catch (Throwable e) {
+                if (response.getStatus() == 0) {
+                    response.setStatus(500);
+                    request.addHeader("Connection", "close");
+                }
+            }
+
+            try {
+                httpServer.getResponseService().respond(request, response);
+            } catch (IOException e) {
+                log.error("Can't get response", e);
+                closeConnection(request);
+            }
+
+            if (request.isCloseConnection()) {
+                closeConnection(request);
+            } else {
+                if (serverKeepAlive && request.isKeepAlive()) {
+                    httpServer.getKeepAliveThreadPool().handle(new KeepAliveHttpTask(httpServer, request));
+                }
+            }
+        } else {
+            log.debug("Request is not correct: " + request);
         }
     }
 
-    private void returnResponse(Request request) throws IOException {
-        Response response = new Response(request);
-
+    private Response executeReaction(Response response) throws Exception {
         Reaction reaction = getReaction(request, request.getMethod());
 
         if (reaction != null) {
             reaction.react(request, response);
         }
-
-        httpServer.getResponseService().respond(request, response);
+        return response;
     }
 
     private Reaction getReaction(Request request, RequestMethods method) {

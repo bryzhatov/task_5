@@ -23,12 +23,12 @@ public class GetIndexPageController implements Reaction {
     private CategoryService categoryService;
 
     public GetIndexPageController(CategoryService categoryService, TemplateEngine templateEngine) {
-        this.categoryService =categoryService;
+        this.categoryService = categoryService;
         this.templateEngine = templateEngine;
     }
 
     @Override
-    public void react(HttpRequest request, HttpResponse response) {
+    public void react(HttpRequest request, HttpResponse response) throws Exception {
         try {
             String page = templateEngine.render("index.html",
                     singletonMap("categories", categoryService.getCategories())

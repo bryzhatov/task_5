@@ -37,7 +37,6 @@ public class Application {
         httpServer.addReaction("/", GET, new GetIndexPageController(categoryService, new FreemarkerTemplate("/web")));
         httpServer.addReaction("/v1/categories/main", GET, new GetMainCategoriesController(categoryService));
         httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static"));
-        httpServer.addReaction("/static/at/*", GET, StaticControllerFactory.classpath("/other/static"));
         httpServer.deploy();
     }
 

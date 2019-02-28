@@ -11,7 +11,7 @@ public interface HttpResponse {
 
     void write(Reader stream) throws IOException;
 
-    void write(String string);
+    void write(String string) throws IOException;
 
     void addHeader(String key, String value);
 

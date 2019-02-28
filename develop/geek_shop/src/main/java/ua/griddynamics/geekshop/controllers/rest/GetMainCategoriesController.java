@@ -23,7 +23,7 @@ public class GetMainCategoriesController implements Reaction {
     }
 
     @Override
-    public void react(HttpRequest request, HttpResponse response) {
+    public void react(HttpRequest request, HttpResponse response) throws Exception {
         Gson gson = new Gson();
         try {
 
@@ -32,7 +32,6 @@ public class GetMainCategoriesController implements Reaction {
 
         } catch (ServiceException e) {
             log.error(e);
-            response.setStatus(500);
         }
     }
 }
