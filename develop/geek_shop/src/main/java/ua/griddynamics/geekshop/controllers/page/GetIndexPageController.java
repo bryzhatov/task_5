@@ -28,14 +28,14 @@ public class GetIndexPageController implements Reaction {
     }
 
     @Override
-    public void react(HttpRequest request, HttpResponse response) throws Exception {
-        try {
-            String page = templateEngine.render("index.html",
-                    singletonMap("categories", categoryService.getCategories())
-            );
-            response.write(page);
-        } catch (TemplateException | ServiceException e) {
-            log.error(e);
-        }
+    public void react(HttpRequest request, HttpResponse response) {
+//        try {
+//            String page = templateEngine.render("index.html",
+//                    singletonMap("categories", categoryService.getCategories())
+//            );
+//            response.write(page);
+//        } catch (TemplateException | ServiceException e) {
+//            log.error(e);
+//        }
     }
 }

@@ -19,7 +19,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
     public CategoryPostgresRepository(Supplier<Connection> connectionSupplier) {
         this.connectionSupplier = connectionSupplier;
     }
-
+    
     @Override
     public List<Category> getAllCategories() throws DataBaseException {
         List<Category> categories = new ArrayList<>();

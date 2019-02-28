@@ -20,6 +20,10 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    public void m() {
+
+    }
+
     public List<Category> getMainCategories() throws ServiceException {
         try {
             return categoryRepository.getMainCategories();
@@ -28,15 +32,11 @@ public class CategoryService {
         }
     }
 
-    public List<Category> getCategories() throws ServiceException {
+    public List<Category> getCategories(int parentId, int deep) throws ServiceException {
         try {
             return categoryRepository.getAllCategories();
         } catch (DataBaseException e) {
             throw new ServiceException("Can't get all categories", e);
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println("classpath:web/static");
     }
 }
