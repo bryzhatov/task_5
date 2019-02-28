@@ -20,7 +20,6 @@ import java.net.*;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -61,8 +60,7 @@ public class HttpServer implements Server {
         try {
             socketServer.bind(new InetSocketAddress(propServer.getHost(), propServer.getPort()));
             log.info("Deployed by: " + propServer.getHost() + ":" + propServer.getPort());
-            // TODO константа
-            socketServer.setSoTimeout(1000);
+            socketServer.setSoTimeout(propServer.getEmptyRequestTimeOut());
 
         } catch (SocketException e) {
             log.error("Error when set time out for server: " + e);
