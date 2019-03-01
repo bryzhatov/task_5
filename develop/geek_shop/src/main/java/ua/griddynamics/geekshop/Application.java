@@ -2,8 +2,8 @@ package ua.griddynamics.geekshop;
 
 import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.controllers.page.GetIndexPageController;
+import ua.griddynamics.geekshop.controllers.page.GetMenuPageController;
 import ua.griddynamics.geekshop.controllers.rest.GetCategoriesController;
-import ua.griddynamics.geekshop.controllers.rest.GetMainCategoriesController;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.CategoryPostgresRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
@@ -33,12 +33,16 @@ public class Application {
         CategoryService categoryService = new CategoryService(categoryPostgresRepository);
 
         HttpServerConfig config = new HttpServerConfig(properties);
+        FreemarkerTemplate freemarkerTemplate = new FreemarkerTemplate("/web");
 
         HttpServer httpServer = new HttpServer(config);
-        httpServer.addReaction("/", GET, new GetIndexPageController(categoryService, new FreemarkerTemplate("/web")));
-        httpServer.addReaction("/v1/categories/main", GET, new GetMainCategoriesController(categoryService));
+
+        httpServer.addReaction("/", GET, new GetIndexPageController(categoryService, freemarkerTemplate));
+        httpServer.addReaction("/menu", GET, new GetMenuPageController(categoryService, freemarkerTemplate));
+
         httpServer.addReaction("/v1/categories/", GET, new GetCategoriesController(categoryService));
-        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static"));
+        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
+
         httpServer.deploy();
     }
 

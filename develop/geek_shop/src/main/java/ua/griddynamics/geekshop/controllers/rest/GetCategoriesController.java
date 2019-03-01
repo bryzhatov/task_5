@@ -1,9 +1,18 @@
 package ua.griddynamics.geekshop.controllers.rest;
 
+import com.google.gson.Gson;
+import ua.griddynamics.geekshop.entity.Category;
+import ua.griddynamics.geekshop.entity.CategoryDTO;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.api.Reaction;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Dmitry Bryzhatov
@@ -18,11 +27,27 @@ public class GetCategoriesController implements Reaction {
 
     @Override
     public void react(HttpRequest request, HttpResponse response) {
-        int parentId = Integer.parseInt(request.getParameter("parent_id"));
-        int deep = Integer.parseInt(request.getParameter("deep"));
+        List<CategoryDTO> answer = new ArrayList<>();
+        Map<Integer, CategoryDTO> categoryDTOMap = new HashMap<>();
 
-        System.out.println(parentId);
-        System.out.println(deep);
-        categoryService.getCategories(1, 3);
+        for (Category category : categoryService.getCategories()) {
+            categoryDTOMap.put(category.getId(), new CategoryDTO(category));
+        }
+
+        for (Map.Entry<Integer, CategoryDTO> entry : categoryDTOMap.entrySet()) {
+            int parentId = entry.getValue().getCategory().getParentId();
+
+            if (parentId != 0) {
+                CategoryDTO parentCategory = categoryDTOMap.get(parentId);
+                parentCategory.addChildren(entry.getValue().getCategory());
+            } else {
+                answer.add(entry.getValue());
+            }
+        }
+        try {
+            response.write(new Gson().toJson(answer));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

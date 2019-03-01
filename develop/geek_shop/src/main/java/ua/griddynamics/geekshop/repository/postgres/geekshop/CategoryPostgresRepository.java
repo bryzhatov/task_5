@@ -27,7 +27,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
         try (Connection connection = connectionSupplier.get()) {
 
             try (ResultSet resultSet = connection
-                    .createStatement().executeQuery("SELECT * FROM \"category\"")) {
+                    .createStatement().executeQuery("SELECT * FROM \"categories\" ORDER BY parent_id")) {
 
                 if (resultSet != null) {
                     while (resultSet.next()) {

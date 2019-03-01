@@ -1,0 +1,55 @@
+<html>
+<head>
+    <title>Geek Shop</title>
+    <link rel="stylesheet" href="/in.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div id="menu">
+
+    </div>
+
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+
+<script>
+    $( document ).ready(function() {
+        $.ajax({
+            url: "/v1/categories/",
+            success: function(result) {
+              var menu = JSON.parse(result);
+
+              menu.forEach(function(element) {
+                addMainCategory(element, 'menu')
+              });
+            }
+        });
+    });
+
+    function addMainCategory(element, id) {
+        var mainCategoryDiv = document.createElement('div');
+
+        mainCategoryDiv.setAttribute("id", element.category.id);
+
+        mainCategoryDiv.innerHTML = '<b>' + element.category.name + '</b>';
+        document.getElementById(id).appendChild(mainCategoryDiv);
+
+        addChildCategory(element);
+    }
+
+    function addChildCategory(element) {
+        if (element.childCategory.length) {
+            var childCategory = element.childCategory;
+
+            childCategory.forEach(function(entry) {
+                addMainCategory(entry, element.category.id);
+            });
+        }
+    }
+    </script>
+</html>

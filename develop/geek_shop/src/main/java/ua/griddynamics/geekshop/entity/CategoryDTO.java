@@ -1,0 +1,26 @@
+package ua.griddynamics.geekshop.entity;
+
+import com.google.gson.Gson;
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author Dmitry Bryzhatov
+ * @since 2019-03-01
+ */
+@Data
+public class CategoryDTO {
+    private final Category category;
+    private final List<CategoryDTO> childCategory;
+
+    public CategoryDTO(Category mainCategory) {
+        this.category = mainCategory;
+        childCategory = new ArrayList<>();
+    }
+
+    public void addChildren(Category category) {
+        childCategory.add(new CategoryDTO(category));
+    }
+}
