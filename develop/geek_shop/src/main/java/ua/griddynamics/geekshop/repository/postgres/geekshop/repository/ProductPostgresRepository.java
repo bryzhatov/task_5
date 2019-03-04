@@ -1,10 +1,11 @@
 package ua.griddynamics.geekshop.repository.postgres.geekshop.repository;
 
-import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.entity.Product;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.repository.api.ProductRepository;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,6 +54,7 @@ public class ProductPostgresRepository implements ProductRepository {
         long categoryId = resultSet.getLong("category_id");
         String description = resultSet.getString("description");
         long manufacturerId = resultSet.getLong("manufacturer_id");
-        return new Product(id, count,name, categoryId, description, manufacturerId);
+        long price = resultSet.getLong("price");
+        return new Product(id, count, name, categoryId, new BigDecimal(new BigInteger(Long.toString(price)), 2), description, manufacturerId);
     }
 }

@@ -23,5 +23,6 @@ function addProductToGrid(element) {
     divProducts.appendChild(templateProduct);
 
     $('#'+element.id).find('#product_name').text(element.name);
+    $('#'+element.id).find('#product_price').text(element.price+' $');
     $('#'+element.id).find('#product_description').text(element.description);
 }
