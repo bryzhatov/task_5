@@ -1,83 +1,28 @@
-<html>
-    <head>
-        <title>Geek Shop</title>
-        <link rel="stylesheet" href="/static/categories.css">
-        <link rel="stylesheet" href="/static/grid_product.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    </head>
+<#include "/static/util/header.html"/>
 
-    <body class="intro">
+<div class="container" style="margin-top:5%">
 
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Geek Shop</a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a target="_blank">GeekShop Project</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav">
-                        <li>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Categories<b class="caret"></b></a>
+    <div id="products" class="row list-group">
 
-                            <ul class="dropdown-menu" id="menu">
+        <div class="item  col-xs-4 col-lg-4" hidden>
+            <div class="thumbnail">
+                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt=""/>
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading" id="product_name">Product name</h4>
 
-
-
-                                <li class="dropdown-submenu" id="dropMenu" hidden>
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown</a>
-
-                                    <ul class="dropdown-menu">
-
-                                    </ul>
-                                </li>
-
-
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="container" style="margin-top:5%">
-
-            <div id="products" class="row list-group">
-
-
-                <div class="item  col-xs-4 col-lg-4" hidden>
-                    <div class="thumbnail">
-                        <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
-                        <div class="caption">
-                            <h4 class="group inner list-group-item-heading" id="product_name">Product name</h4>
-
-                            <p class="group inner list-group-item-text" id="product_description">description</p>
-                            <div class="row">
-                                <div class="col-xs-12 col-md-6">
-                                    <p class="lead" id="product_price">price</p>
-                                </div>
-                                <div class="col-xs-12 col-md-6">
-                                    <a class="btn btn-success" href="http://www.jquery2dotnet.com">ADD</a>
-                                </div>
-                            </div>
+                    <p class="group inner list-group-item-text" id="product_description">description</p>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead" id="product_price">price</p>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <a class="btn btn-success" href="http://www.jquery2dotnet.com">ADD</a>
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
-    </body>
+    </div>
+</div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <script src="/static/js/categories.js"></script>
-    <script src="/static/js/grid_products.js"></script>
-</html>
+<#include "/static/util/footer.html"/>
