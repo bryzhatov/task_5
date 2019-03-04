@@ -22,7 +22,7 @@ function addProductToGrid(element) {
     templateProduct.removeAttribute('hidden');
     divProducts.appendChild(templateProduct);
 
-
     $('#'+element.id).find('#product_name').text(element.name);
-    $('#'+element.id).find('#product_description').text(element.description);
+
+    $('#'+element.id).find('#product_description').text(description);
 }
