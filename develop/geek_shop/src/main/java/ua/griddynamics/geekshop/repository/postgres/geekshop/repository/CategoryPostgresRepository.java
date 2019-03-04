@@ -1,10 +1,12 @@
-package ua.griddynamics.geekshop.repository.postgres.geekshop;
+package ua.griddynamics.geekshop.repository.postgres.geekshop.repository;
 
 import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -19,7 +21,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
     public CategoryPostgresRepository(Supplier<Connection> connectionSupplier) {
         this.connectionSupplier = connectionSupplier;
     }
-    
+
     @Override
     public List<Category> getAllCategories() throws DataBaseException {
         List<Category> categories = new ArrayList<>();
@@ -70,6 +72,6 @@ public class CategoryPostgresRepository implements CategoryRepository {
         int id = resultSet.getInt("id");
         int parentId = resultSet.getInt("parent_id");
         String name = resultSet.getString("name");
-        return new Category(id, parentId, name);
+        return new Category(id, name, parentId);
     }
 }

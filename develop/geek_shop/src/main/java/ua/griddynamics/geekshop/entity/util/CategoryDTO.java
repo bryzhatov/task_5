@@ -1,6 +1,7 @@
-package ua.griddynamics.geekshop.entity;
+package ua.griddynamics.geekshop.entity.util;
 
 import lombok.Data;
+import ua.griddynamics.geekshop.entity.Category;
 
 import java.util.ArrayList;
 import java.util.List;

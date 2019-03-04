@@ -2,7 +2,7 @@ package ua.griddynamics.geekshop.controllers.rest;
 
 import com.google.gson.Gson;
 import ua.griddynamics.geekshop.entity.Category;
-import ua.griddynamics.geekshop.entity.CategoryDTO;
+import ua.griddynamics.geekshop.entity.util.CategoryDTO;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
@@ -36,6 +36,7 @@ public class GetCategoriesController implements Reaction {
 
         for (Map.Entry<Integer, CategoryDTO> entry : categoryDTOMap.entrySet()) {
             int parentId = entry.getValue().getCategory().getParentId();
+
             if (parentId != 0) {
                 CategoryDTO parentCategory = categoryDTOMap.get(parentId);
                 parentCategory.addChildren(entry.getValue());
@@ -43,7 +44,7 @@ public class GetCategoriesController implements Reaction {
                 answer.add(entry.getValue());
             }
         }
-        
+
         try {
             response.write(new Gson().toJson(answer));
         } catch (IOException e) {

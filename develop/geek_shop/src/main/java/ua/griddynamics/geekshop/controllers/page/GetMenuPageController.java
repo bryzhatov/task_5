@@ -1,11 +1,8 @@
 package ua.griddynamics.geekshop.controllers.page;
 
-import com.google.gson.Gson;
 import freemarker.template.TemplateException;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.geekshop.entity.Category;
-import ua.griddynamics.geekshop.entity.CategoryDTO;
 import ua.griddynamics.geekshop.exception.ServiceException;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
@@ -14,10 +11,6 @@ import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.api.Reaction;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.singletonMap;
 

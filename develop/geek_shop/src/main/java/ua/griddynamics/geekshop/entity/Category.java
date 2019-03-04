@@ -11,6 +11,6 @@ import lombok.*;
 public class Category {
     @Setter(AccessLevel.NONE)
     private int id;
-    private int parentId;
     private String name;
+    private int parentId;
 }
