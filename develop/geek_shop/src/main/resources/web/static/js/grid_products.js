@@ -5,7 +5,7 @@ $( document ).ready(function() {
         success: function(result) {
             var menu = JSON.parse(result);
             menu.forEach(function(element) {
-
+                console.log(element);
                 addProductToGrid(element);
 
             });
@@ -23,6 +23,5 @@ function addProductToGrid(element) {
     divProducts.appendChild(templateProduct);
 
     $('#'+element.id).find('#product_name').text(element.name);
-
-    $('#'+element.id).find('#product_description').text(description);
+    $('#'+element.id).find('#product_description').text(element.description);
 }
