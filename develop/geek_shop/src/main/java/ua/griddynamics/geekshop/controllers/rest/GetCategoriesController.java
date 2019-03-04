@@ -36,14 +36,14 @@ public class GetCategoriesController implements Reaction {
 
         for (Map.Entry<Integer, CategoryDTO> entry : categoryDTOMap.entrySet()) {
             int parentId = entry.getValue().getCategory().getParentId();
-
             if (parentId != 0) {
                 CategoryDTO parentCategory = categoryDTOMap.get(parentId);
-                parentCategory.addChildren(entry.getValue().getCategory());
+                parentCategory.addChildren(entry.getValue());
             } else {
                 answer.add(entry.getValue());
             }
         }
+        
         try {
             response.write(new Gson().toJson(answer));
         } catch (IOException e) {

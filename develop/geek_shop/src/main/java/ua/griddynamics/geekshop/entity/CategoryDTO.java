@@ -1,6 +1,5 @@
 package ua.griddynamics.geekshop.entity;
 
-import com.google.gson.Gson;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class CategoryDTO {
         childCategory = new ArrayList<>();
     }
 
-    public void addChildren(Category category) {
-        childCategory.add(new CategoryDTO(category));
+    public void addChildren(CategoryDTO category) {
+        childCategory.add(category);
     }
 }
