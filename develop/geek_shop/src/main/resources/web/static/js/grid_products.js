@@ -1,4 +1,4 @@
-$( document ).ready(function() {
+function requestToProducts() {
     $.ajax({
         url: "/v1/products/",
         async: false,
@@ -9,7 +9,7 @@ $( document ).ready(function() {
             });
         }
     });
-});
+}
 
 function addProductToGrid(element) {
     var divProducts = document.getElementById('products');
@@ -22,4 +22,5 @@ function addProductToGrid(element) {
     $('#'+element.id).find('#product_name').text(element.name);
     $('#'+element.id).find('#product_price').text(element.price+' $');
     $('#'+element.id).find('#product_description').text(element.description);
+    $('#'+element.id).find('#product_image').attr('src', element.imageLink);
 }

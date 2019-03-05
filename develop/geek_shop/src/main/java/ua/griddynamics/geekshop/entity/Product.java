@@ -19,6 +19,7 @@ public class Product {
     private long count;
     private String name;
     private long categoryId;
+    private String imageLink;
     private BigDecimal price;
     private String description;
     private long manufacturerId;

@@ -20,6 +20,7 @@ public class HttpCodes {
 
     private void initDefault() {
         config.put(200, "OK");
+        config.put(400, "Bad Request");
         config.put(403, "Forbidden");
         config.put(404, "Not Found");
         config.put(405, "Method Not Allowed");

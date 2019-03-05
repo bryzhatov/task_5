@@ -1,10 +1,12 @@
 package ua.griddynamics.geekshop.repository.postgres.geekshop.repository;
 
 import ua.griddynamics.geekshop.entity.Category;
+import ua.griddynamics.geekshop.entity.util.CategoryDTO;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,6 +22,42 @@ public class CategoryPostgresRepository implements CategoryRepository {
 
     public CategoryPostgresRepository(Supplier<Connection> connectionSupplier) {
         this.connectionSupplier = connectionSupplier;
+    }
+
+    public List<CategoryDTO> getCategories(int deep) {
+        try (Connection connection = connectionSupplier.get()) {
+
+            List<CategoryDTO> categoryDTOS = new ArrayList<>();
+            List<Category> categories = getMainCategories(connection);
+
+            for (Category category : categories) {
+                CategoryDTO categoryDTO = new CategoryDTO(category);
+                categoryDTOS.add(categoryDTO);
+
+                find(connection, categoryDTO, deep);
+            }
+            return categoryDTOS;
+        } catch (SQLException e) {
+            throw new DataBaseException(e.getMessage(), e);
+        }
+    }
+
+    private void find(Connection connection, CategoryDTO parent, int deep) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"categories\" WHERE parent_id = ?")) {
+            statement.setInt(1, parent.getCategory().getId());
+
+            if (deep > 1) {
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        CategoryDTO child = new CategoryDTO(categoryMapper(resultSet));
+                        parent.addChildren(child);
+                        find(connection, child, --deep);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataBaseException(e.getMessage(), e);
+        }
     }
 
     @Override
@@ -50,19 +88,25 @@ public class CategoryPostgresRepository implements CategoryRepository {
         List<Category> categories = new ArrayList<>();
 
         try (Connection connection = connectionSupplier.get()) {
-
-            try (ResultSet resultSet = connection
-                    .createStatement().executeQuery("SELECT * FROM \"category\" WHERE parent_id IS NULL")) {
-
-                if (resultSet != null) {
-                    while (resultSet.next()) {
-                        Category category = categoryMapper(resultSet);
-                        categories.add(category);
-                    }
-                    return categories;
-                }
-            }
+            return getMainCategories(connection);
         } catch (SQLException e) {
+            throw new DataBaseException(e.getMessage(), e);
+        }
+    }
+
+    private List<Category> getMainCategories(Connection connection){
+        List<Category> categories = new ArrayList<>();
+        try (ResultSet resultSet = connection
+                .createStatement().executeQuery("SELECT * FROM \"categories\" WHERE parent_id = 0")) {
+
+            if (resultSet != null) {
+                while (resultSet.next()) {
+                    Category category = categoryMapper(resultSet);
+                    categories.add(category);
+                }
+                return categories;
+            }
+        }catch (SQLException e) {
             throw new DataBaseException(e.getMessage(), e);
         }
         return categories;

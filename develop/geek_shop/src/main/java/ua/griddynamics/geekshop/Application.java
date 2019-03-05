@@ -35,6 +35,7 @@ public class Application {
         ProductPostgresRepository productPostgresRepository = new ProductPostgresRepository(geekShopConnectionProvider);
 
         CategoryService categoryService = new CategoryService(categoryPostgresRepository);
+
         ProductService productService = new ProductService(productPostgresRepository);
 
         HttpServerConfig config = new HttpServerConfig(properties);
@@ -46,6 +47,7 @@ public class Application {
 
         httpServer.addReaction("/v1/categories/", GET, new GetCategoriesController(categoryService));
         httpServer.addReaction("/v1/products/", GET, new GetProductsController(productService));
+
         httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
 
         httpServer.deploy();

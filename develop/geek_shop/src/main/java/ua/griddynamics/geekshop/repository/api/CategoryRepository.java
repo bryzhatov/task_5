@@ -1,6 +1,7 @@
 package ua.griddynamics.geekshop.repository.api;
 
 import ua.griddynamics.geekshop.entity.Category;
+import ua.griddynamics.geekshop.entity.util.CategoryDTO;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface CategoryRepository {
     List<Category> getAllCategories() throws DataBaseException;
 
     List<Category> getMainCategories() throws DataBaseException;
+
+    List<CategoryDTO> getCategories(int deep) throws DataBaseException;
 }
