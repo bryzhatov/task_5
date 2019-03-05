@@ -43,12 +43,12 @@ public class StaticResourceController implements Reaction {
                         {
                             if (path.toString().endsWith(request.getPathInfo())) {
                                 try {
-                                    File file1 = new File(MimeType.get(path.getFileName().toString()), Files.readAllBytes(path));
+                                    File newFile = new File(MimeType.get(path.getFileName().toString()), Files.readAllBytes(path));
 
-                                    cacheFile(request.getPathInfo(), file1);
+                                    cacheFile(request.getPathInfo(), newFile);
 
-                                    response.addHeader("Content-Type", file1.getMimeType());
-                                    response.write(file1.getFile());
+                                    response.addHeader("Content-Type", newFile.getMimeType());
+                                    response.write(newFile.getFile());
 
                                 } catch (IOException e) {
                                     log.error("Can't read bytes from resource", e);
