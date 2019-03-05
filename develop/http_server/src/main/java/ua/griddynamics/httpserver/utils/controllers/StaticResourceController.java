@@ -1,6 +1,10 @@
 package ua.griddynamics.httpserver.utils.controllers;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.api.Reaction;
@@ -8,6 +12,7 @@ import ua.griddynamics.httpserver.api.Reaction;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Log4j
 public class StaticResourceController implements Reaction {
-    private final Map<String, byte[]> cache = new ConcurrentHashMap<>();
+    private final Map<String, File> cache = new ConcurrentHashMap<>();
     private final Path staticResDir;
 
     public StaticResourceController(Path staticResDir) {
@@ -27,11 +32,10 @@ public class StaticResourceController implements Reaction {
     @Override
     public void react(HttpRequest request, HttpResponse response) {
         try {
-            byte[] byteFile;
-            byteFile = cache.get(request.getPathInfo());
+            File file = cache.get(request.getPathInfo());
 
-            if (byteFile != null) {
-                response.write(new String(byteFile));
+            if (file != null) {
+                response.write(file.getFile());
             } else {
                 Files.walk(staticResDir)
                         .filter(Files::isRegularFile)
@@ -39,10 +43,12 @@ public class StaticResourceController implements Reaction {
                         {
                             if (path.toString().endsWith(request.getPathInfo())) {
                                 try {
-                                    byte[] temp = Files.readAllBytes(path);
-                                    cacheFile(request.getPathInfo(), temp);
+                                    File file1 = new File(MimeType.get(path.getFileName().toString()), Files.readAllBytes(path));
 
-                                    response.write(temp);
+                                    cacheFile(request.getPathInfo(), file1);
+
+                                    response.addHeader("Content-Type", file1.getMimeType());
+                                    response.write(file1.getFile());
 
                                 } catch (IOException e) {
                                     log.error("Can't read bytes from resource", e);
@@ -55,7 +61,35 @@ public class StaticResourceController implements Reaction {
         }
     }
 
-    private void cacheFile(String file, byte[] bytesFile) {
+    private void cacheFile(String file, File bytesFile) {
         cache.put(file, bytesFile);
+    }
+
+    private static class MimeType {
+        private static final Map<String, String> MIME_TYPES = new HashMap<>();
+
+        static {
+            MIME_TYPES.put("html", "text/html");
+            MIME_TYPES.put("css", "text/css");
+            MIME_TYPES.put("js", "text/javascript");
+            MIME_TYPES.put("jpeg", "image/jpeg");
+        }
+
+        public static String get(String fileName) {
+            String[] splitFileName = StringUtils.split(fileName, ".");
+            String mimeType = MIME_TYPES.get(splitFileName[splitFileName.length - 1]);
+
+            if (mimeType != null) {
+                return mimeType;
+            }
+            return "text/plain";
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class File {
+        private final String mimeType;
+        private final byte[] file;
     }
 }

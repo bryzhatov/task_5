@@ -32,8 +32,7 @@ public class GetIndexPageController implements Reaction {
         try {
             response.addHeader("Content-Type", "text/html");
             String page = templateEngine.render("index.html",
-                    singletonMap("categories", categoryService.getCategories())
-            );
+                    singletonMap("categories", categoryService.getCategories()));
             response.write(page);
         } catch (TemplateException | ServiceException e) {
             log.error(e);
