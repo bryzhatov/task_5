@@ -5,9 +5,7 @@ $( document ).ready(function() {
         success: function(result) {
             var menu = JSON.parse(result);
             menu.forEach(function(element) {
-                console.log(element);
                 addProductToGrid(element);
-
             });
         }
     });
@@ -18,7 +16,6 @@ function addProductToGrid(element) {
 
     var templateProduct = divProducts.childNodes[1].cloneNode(true);
     templateProduct.id = element.id;
-    console.log(element.id);
     templateProduct.removeAttribute('hidden');
     divProducts.appendChild(templateProduct);
 

@@ -9,6 +9,12 @@ import lombok.Getter;
 public class ServerException extends RuntimeException {
     @Getter
     private final int statusCode;
+
+    public ServerException(String message, int statusCode) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+
     public ServerException(String message, Throwable cause, int statusCode) {
         super(message, cause);
         this.statusCode = statusCode;

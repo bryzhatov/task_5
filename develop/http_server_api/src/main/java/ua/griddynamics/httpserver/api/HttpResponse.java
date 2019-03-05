@@ -2,6 +2,7 @@ package ua.griddynamics.httpserver.api;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringWriter;
 
 /**
  * @author Dmitry Bryzhatov
@@ -20,4 +21,6 @@ public interface HttpResponse {
     String getHeader(String key);
 
     void setStatus(int status);
+
+    StringWriter getWriter();
 }

@@ -33,7 +33,7 @@ public class Request implements HttpRequest {
     }
 
     public boolean isCorrect() {
-        return url != null && url.matches("/[A-z0-9$#=,+*@!'%&~:_/\\.\\[\\]\\(\\)]*") && method != null;
+        return url != null && url.matches("/[A-z0-9$#=,+*@\\-!'%&~:_/\\.\\[\\]\\(\\)]*") && method != null;
     }
 
     public boolean isKeepAlive() {

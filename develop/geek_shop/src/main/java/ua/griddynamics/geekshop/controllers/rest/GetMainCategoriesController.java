@@ -9,6 +9,8 @@ import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.api.Reaction;
 
+import java.sql.Blob;
+
 /**
  * @author Dmitry Bryzhatov
  * @since 2019-02-21

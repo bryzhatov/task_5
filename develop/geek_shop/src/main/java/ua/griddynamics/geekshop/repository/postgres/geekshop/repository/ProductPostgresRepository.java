@@ -4,8 +4,12 @@ import ua.griddynamics.geekshop.entity.Product;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.repository.api.ProductRepository;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,6 +59,15 @@ public class ProductPostgresRepository implements ProductRepository {
         String description = resultSet.getString("description");
         long manufacturerId = resultSet.getLong("manufacturer_id");
         long price = resultSet.getLong("price");
-        return new Product(id, count, name, categoryId, new BigDecimal(new BigInteger(Long.toString(price)), 2), description, manufacturerId);
+        Blob imageBlob = resultSet.getBlob("image");
+
+        return new Product(
+                id,
+                count,
+                name,
+                categoryId,
+                new BigDecimal(new BigInteger(Long.toString(price)), 2),
+                description,
+                manufacturerId);
     }
 }
