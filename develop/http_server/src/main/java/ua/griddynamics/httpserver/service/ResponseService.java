@@ -6,9 +6,8 @@ import ua.griddynamics.httpserver.entity.Response;
 import ua.griddynamics.httpserver.properties.HttpServerProperties;
 import ua.griddynamics.httpserver.utils.HttpCodes;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -37,10 +36,10 @@ public class ResponseService {
     }
 
     private void setStatusCode(Response response) {
-        if (response.getWriter().getBuffer().length() == 0 && response.getStatus() == 0) {
+        if (response.getWriter().size() == 0 && response.getStatus() == 0) {
             response.setStatus(404);
         }
-        if (response.getWriter().getBuffer().length() > 0 && response.getStatus() == 0) {
+        if (response.getWriter().size() > 0 && response.getStatus() == 0) {
             response.setStatus(200);
         }
     }
@@ -53,25 +52,25 @@ public class ResponseService {
         } else {
             response.addHeaderIfAbsent("Connection", "close");
         }
-        response.addHeaderIfAbsent("Content-Length", String.valueOf(getBody(response).getBytes().length + 2));
+        response.addHeaderIfAbsent("Content-Length", String.valueOf(getBody(response).length));
         response.addHeaderIfAbsent("Date", threadLocal.get().format(LocalDateTime.now()));
         response.addHeaderIfAbsent("Location", request.getLocation());
         response.addHeaderIfAbsent("Server", "Anton/0.1");
     }
 
     private void writeResponse(Request request, Response response) throws IOException {
-        BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(response.getSocket().getOutputStream()));
+        OutputStream writer = response.getSocket().getOutputStream();
 
         String status = String.format("HTTP/1.1 %s %s\r\n", response.getStatus(), httpCodes.getMessage(response.getStatus()));
-        writer.write(status);
+
+        writer.write(status.getBytes());
 
         StringBuilder headersBuilder = new StringBuilder();
         for (Map.Entry entry : response.getHeaders().entrySet()) {
             headersBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
         }
-        headersBuilder.append("\r\n\r\n");
-        writer.write(headersBuilder.toString());
+        headersBuilder.append("\r\n");
+        writer.write(headersBuilder.toString().getBytes());
 
         writer.write(getBody(response));
 
@@ -82,20 +81,20 @@ public class ResponseService {
         }
     }
 
-    private String getBody(Response response) {
-        if (response.getWriter().getBuffer().length() > 0) {
-            return response.getWriter().toString();
+    private byte[] getBody(Response response) {
+        if (response.getWriter().size() > 0) {
+            return response.getBody();
         } else {
             return errorPage.getErrorPage(response.getStatus());
         }
     }
 
     private class ErrorPage {
-        String getErrorPage(int status) {
-            return "<html><title></title><body><h1><b>" +
+        byte[] getErrorPage(int status) {
+            return ("<html><title></title><body><h1><b>" +
                     status + " " +
                     httpCodes.getMessage(status) +
-                    "</b><h1></body></html>";
+                    "</b><h1></body></html>").getBytes();
         }
     }
 }

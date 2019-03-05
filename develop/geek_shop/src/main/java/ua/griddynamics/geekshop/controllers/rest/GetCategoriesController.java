@@ -8,7 +8,6 @@ import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.api.Reaction;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,10 +44,6 @@ public class GetCategoriesController implements Reaction {
             }
         }
 
-        try {
-            response.write(new Gson().toJson(answer));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        response.write(new Gson().toJson(answer));
     }
 }

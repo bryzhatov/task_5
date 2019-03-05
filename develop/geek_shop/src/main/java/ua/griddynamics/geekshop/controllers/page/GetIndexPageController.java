@@ -10,8 +10,6 @@ import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.api.Reaction;
 
-import java.io.IOException;
-
 import static java.util.Collections.singletonMap;
 
 /**
@@ -32,14 +30,13 @@ public class GetIndexPageController implements Reaction {
     @Override
     public void react(HttpRequest request, HttpResponse response) {
         try {
+            response.addHeader("Content-Type", "text/html");
             String page = templateEngine.render("index.html",
                     singletonMap("categories", categoryService.getCategories())
             );
             response.write(page);
         } catch (TemplateException | ServiceException e) {
             log.error(e);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

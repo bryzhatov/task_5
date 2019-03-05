@@ -2,7 +2,6 @@ package ua.griddynamics.geekshop;
 
 import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.controllers.page.GetIndexPageController;
-import ua.griddynamics.geekshop.controllers.page.GetMenuPageController;
 import ua.griddynamics.geekshop.controllers.rest.GetCategoriesController;
 import ua.griddynamics.geekshop.controllers.rest.GetProductsController;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
@@ -44,7 +43,6 @@ public class Application {
         HttpServer httpServer = new HttpServer(config);
 
         httpServer.addReaction("/", GET, new GetIndexPageController(categoryService, freemarkerTemplate));
-        httpServer.addReaction("/menu", GET, new GetMenuPageController(categoryService, freemarkerTemplate));
 
         httpServer.addReaction("/v1/categories/", GET, new GetCategoriesController(categoryService));
         httpServer.addReaction("/v1/products/", GET, new GetProductsController(productService));

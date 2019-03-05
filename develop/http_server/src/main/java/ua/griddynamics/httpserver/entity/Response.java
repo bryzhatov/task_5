@@ -3,12 +3,10 @@ package ua.griddynamics.httpserver.entity;
 import lombok.Data;
 import ua.griddynamics.httpserver.api.HttpResponse;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,7 +16,7 @@ import java.util.Map;
 @Data
 public class Response implements HttpResponse {
     private final Map<String, String> headers = new HashMap<>();
-    private final StringWriter writer = new StringWriter();
+    private final List<Byte> writer = new ArrayList<>();
     private final Socket socket;
     private int status;
 
@@ -41,17 +39,25 @@ public class Response implements HttpResponse {
         return headers.get(key);
     }
 
-    public void write(Reader stream) throws IOException {
-        int i;
-        StringBuilder builder = new StringBuilder();
-        while ((i = stream.read()) != -1) {
-            builder.append((char) i);
+    @Override
+    public void write(String body) {
+        for (byte i : body.getBytes()) {
+            writer.add(i);
         }
-        writer.write(builder.toString());
     }
 
     @Override
-    public void write(String string) {
-        writer.write(string);
+    public void write(byte[] body) {
+        for (byte i : body) {
+            writer.add(i);
+        }
+    }
+
+    public byte[] getBody() {
+        byte[] body = new byte[writer.size()];
+        for (int i = 0; i < writer.size(); i++) {
+            body[i] = writer.get(i);
+        }
+        return body;
     }
 }

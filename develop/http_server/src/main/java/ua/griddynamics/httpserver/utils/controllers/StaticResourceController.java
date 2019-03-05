@@ -41,7 +41,9 @@ public class StaticResourceController implements Reaction {
                                 try {
                                     byte[] temp = Files.readAllBytes(path);
                                     cacheFile(request.getPathInfo(), temp);
-                                    response.write(new String(temp));
+
+                                    response.write(temp);
+
                                 } catch (IOException e) {
                                     log.error("Can't read bytes from resource", e);
                                 }
