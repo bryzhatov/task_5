@@ -85,8 +85,6 @@ public class CategoryPostgresRepository implements CategoryRepository {
 
     @Override
     public List<Category> getMainCategories() throws DataBaseException {
-        List<Category> categories = new ArrayList<>();
-
         try (Connection connection = connectionSupplier.get()) {
             return getMainCategories(connection);
         } catch (SQLException e) {
@@ -96,6 +94,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
 
     private List<Category> getMainCategories(Connection connection){
         List<Category> categories = new ArrayList<>();
+
         try (ResultSet resultSet = connection
                 .createStatement().executeQuery("SELECT * FROM \"categories\" WHERE parent_id = 0")) {
 
