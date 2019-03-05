@@ -6,5 +6,5 @@ package ua.griddynamics.httpserver.api;
  */
 @FunctionalInterface
 public interface Reaction {
-    void react(HttpRequest request, HttpResponse response) throws Exception;
+    void react(HttpRequest request, HttpResponse response);
 }

@@ -21,7 +21,7 @@ public class GetProductsController implements Reaction {
     }
 
     @Override
-    public void react(HttpRequest request, HttpResponse response) throws Exception {
+    public void react(HttpRequest request, HttpResponse response) {
         response.write(new Gson().toJson(productService.getAllProducts()));
     }
 }

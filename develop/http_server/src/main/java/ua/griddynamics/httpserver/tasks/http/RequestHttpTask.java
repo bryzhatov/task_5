@@ -61,7 +61,7 @@ public class RequestHttpTask extends HttpTask {
             Response response = new Response(request);
             try {
                 executeReaction(response);
-            } catch (Throwable e) {
+            } catch (RuntimeException e) {
                 if (response.getStatus() == 0) {
                     response.setStatus(500);
                     request.addHeader("Connection", "close");
@@ -87,7 +87,7 @@ public class RequestHttpTask extends HttpTask {
         }
     }
 
-    private Response executeReaction(Response response) throws Exception {
+    private Response executeReaction(Response response) {
         Reaction reaction = getReaction(request, request.getMethod());
 
         if (reaction != null) {

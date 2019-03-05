@@ -25,7 +25,7 @@ public class GetMainCategoriesController implements Reaction {
     }
 
     @Override
-    public void react(HttpRequest request, HttpResponse response) throws Exception {
+    public void react(HttpRequest request, HttpResponse response) {
         Gson gson = new Gson();
         try {
 
