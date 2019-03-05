@@ -2,7 +2,7 @@ package ua.griddynamics.geekshop.service;
 
 import lombok.Setter;
 import ua.griddynamics.geekshop.entity.Category;
-import ua.griddynamics.geekshop.entity.util.CategoryDTO;
+import ua.griddynamics.geekshop.entity.util.CategoryTree;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.exception.ServiceException;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
@@ -21,7 +21,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<CategoryDTO> getCategories(int deep) {
+    public List<CategoryTree> getCategories(int deep) {
         return categoryRepository.getCategories(deep);
     }
 

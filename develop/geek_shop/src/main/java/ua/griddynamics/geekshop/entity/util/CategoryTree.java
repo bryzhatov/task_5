@@ -11,16 +11,16 @@ import java.util.List;
  * @since 2019-03-01
  */
 @Data
-public class CategoryDTO {
+public class CategoryTree {
     private final Category category;
-    private final List<CategoryDTO> childCategory;
+    private final List<CategoryTree> childCategory;
 
-    public CategoryDTO(Category mainCategory) {
+    public CategoryTree(Category mainCategory) {
         this.category = mainCategory;
         childCategory = new ArrayList<>();
     }
 
-    public void addChildren(CategoryDTO category) {
+    public void addChildren(CategoryTree category) {
         childCategory.add(category);
     }
 }

@@ -1,7 +1,7 @@
 package ua.griddynamics.geekshop.repository.postgres.geekshop.repository;
 
 import ua.griddynamics.geekshop.entity.Category;
-import ua.griddynamics.geekshop.entity.util.CategoryDTO;
+import ua.griddynamics.geekshop.entity.util.CategoryTree;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 
@@ -24,32 +24,32 @@ public class CategoryPostgresRepository implements CategoryRepository {
         this.connectionSupplier = connectionSupplier;
     }
 
-    public List<CategoryDTO> getCategories(int deep) {
+    public List<CategoryTree> getCategories(int deep) {
         try (Connection connection = connectionSupplier.get()) {
 
-            List<CategoryDTO> categoryDTOS = new ArrayList<>();
+            List<CategoryTree> categoryTrees = new ArrayList<>();
             List<Category> categories = getMainCategories(connection);
 
             for (Category category : categories) {
-                CategoryDTO categoryDTO = new CategoryDTO(category);
-                categoryDTOS.add(categoryDTO);
+                CategoryTree categoryTree = new CategoryTree(category);
+                categoryTrees.add(categoryTree);
 
-                find(connection, categoryDTO, deep);
+                find(connection, categoryTree, deep);
             }
-            return categoryDTOS;
+            return categoryTrees;
         } catch (SQLException e) {
             throw new DataBaseException(e.getMessage(), e);
         }
     }
 
-    private void find(Connection connection, CategoryDTO parent, int deep) {
+    private void find(Connection connection, CategoryTree parent, int deep) {
         try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"categories\" WHERE parent_id = ?")) {
             statement.setInt(1, parent.getCategory().getId());
 
             if (deep > 1) {
                 try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
-                        CategoryDTO child = new CategoryDTO(categoryMapper(resultSet));
+                        CategoryTree child = new CategoryTree(categoryMapper(resultSet));
                         parent.addChildren(child);
                         find(connection, child, --deep);
                     }
