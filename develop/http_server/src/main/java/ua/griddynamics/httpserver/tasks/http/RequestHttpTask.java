@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.api.Reaction;
 import ua.griddynamics.httpserver.api.controller.RequestMethods;
+import ua.griddynamics.httpserver.api.exception.ReactionException;
+import ua.griddynamics.httpserver.exception.ServerException;
 import ua.griddynamics.httpserver.entity.Request;
 import ua.griddynamics.httpserver.entity.Response;
 
@@ -60,8 +62,10 @@ public class RequestHttpTask extends HttpTask {
 
             Response response = new Response(request);
             try {
+
                 executeReaction(response);
-            } catch (RuntimeException e) {
+
+            } catch (ReactionException | RuntimeException e) {
                 if (response.getStatus() == 0) {
                     response.setStatus(500);
                     request.addHeader("Connection", "close");
@@ -87,13 +91,12 @@ public class RequestHttpTask extends HttpTask {
         }
     }
 
-    private Response executeReaction(Response response) {
+    private void executeReaction(Response response) throws ReactionException {
         Reaction reaction = getReaction(request, request.getMethod());
 
         if (reaction != null) {
             reaction.react(request, response);
         }
-        return response;
     }
 
     private Reaction getReaction(Request request, RequestMethods method) {

@@ -10,5 +10,5 @@ import java.util.List;
  * @since 2019-03-04
  */
 public interface ProductRepository {
-    List<Product> getAllProducts() throws DataBaseException;
+    List<Product> getAllProducts();
 }

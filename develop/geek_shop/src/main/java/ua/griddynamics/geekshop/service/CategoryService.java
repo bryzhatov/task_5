@@ -3,8 +3,6 @@ package ua.griddynamics.geekshop.service;
 import lombok.Setter;
 import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.entity.util.CategoryTree;
-import ua.griddynamics.geekshop.exception.DataBaseException;
-import ua.griddynamics.geekshop.exception.ServiceException;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 
 import java.util.List;
@@ -25,19 +23,7 @@ public class CategoryService {
         return categoryRepository.getCategories(deep);
     }
 
-    public List<Category> getMainCategories() throws ServiceException {
-        try {
-            return categoryRepository.getMainCategories();
-        } catch (DataBaseException e) {
-            throw new ServiceException("Can't get main categories", e);
-        }
-    }
-
-    public List<Category> getCategories() throws ServiceException {
-        try {
-            return categoryRepository.getAllCategories();
-        } catch (DataBaseException e) {
-            throw new ServiceException("Can't get all categories", e);
-        }
+    public List<Category> getCategories() {
+        return categoryRepository.getAllCategories();
     }
 }

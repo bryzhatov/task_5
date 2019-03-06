@@ -66,9 +66,11 @@ public class ResponseService {
         writer.write(status.getBytes());
 
         StringBuilder headersBuilder = new StringBuilder();
+
         for (Map.Entry entry : response.getHeaders().entrySet()) {
             headersBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
         }
+
         headersBuilder.append("\r\n");
         writer.write(headersBuilder.toString().getBytes());
 

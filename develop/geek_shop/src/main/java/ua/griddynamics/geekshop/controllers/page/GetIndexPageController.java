@@ -3,12 +3,12 @@ package ua.griddynamics.geekshop.controllers.page;
 import freemarker.template.TemplateException;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.geekshop.exception.ServiceException;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.api.Reaction;
+import ua.griddynamics.httpserver.api.exception.ReactionException;
 
 import static java.util.Collections.singletonMap;
 
@@ -28,14 +28,16 @@ public class GetIndexPageController implements Reaction {
     }
 
     @Override
-    public void react(HttpRequest request, HttpResponse response) {
+    public void react(HttpRequest request, HttpResponse response) throws ReactionException {
         try {
             response.addHeader("Content-Type", "text/html");
+
             String page = templateEngine.render("index.html",
                     singletonMap("categories", categoryService.getCategories()));
             response.write(page);
-        } catch (TemplateException | ServiceException e) {
-            log.error(e);
+
+        } catch (TemplateException e) {
+            throw new ReactionException(e.getMessage(), e);
         }
     }
 }
