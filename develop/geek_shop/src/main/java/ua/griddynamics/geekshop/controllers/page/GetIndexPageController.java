@@ -8,7 +8,6 @@ import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.api.Reaction;
-import ua.griddynamics.httpserver.api.exception.ReactionException;
 
 import static java.util.Collections.singletonMap;
 
@@ -28,7 +27,7 @@ public class GetIndexPageController implements Reaction {
     }
 
     @Override
-    public void react(HttpRequest request, HttpResponse response) throws ReactionException {
+    public void react(HttpRequest request, HttpResponse response) {
         try {
             response.addHeader("Content-Type", "text/html");
 
@@ -37,7 +36,7 @@ public class GetIndexPageController implements Reaction {
             response.write(page);
 
         } catch (TemplateException e) {
-            throw new ReactionException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }

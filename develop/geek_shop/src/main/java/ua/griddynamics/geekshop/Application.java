@@ -36,21 +36,23 @@ public class Application {
 
         CategoryService categoryService = new CategoryService(categoryPostgresRepository);
 
-        ProductService productService = new ProductService(productPostgresRepository);
+        categoryPostgresRepository.getC(1);
 
-        HttpServerConfig config = new HttpServerConfig(properties);
-        FreemarkerTemplate freemarkerTemplate = new FreemarkerTemplate("/web");
-
-        HttpServer httpServer = new HttpServer(config);
-
-        httpServer.addReaction("/", GET, new GetIndexPageController(categoryService, freemarkerTemplate));
-
-        httpServer.addReaction("/v1/categories/", GET, new GetCategoriesController(categoryService));
-        httpServer.addReaction("/v1/products/", GET, new GetProductsController(productService));
-
-        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
-
-        httpServer.deploy();
+//        ProductService productService = new ProductService(productPostgresRepository);
+//
+//        HttpServerConfig config = new HttpServerConfig(properties);
+//        FreemarkerTemplate freemarkerTemplate = new FreemarkerTemplate("/web");
+//
+//        HttpServer httpServer = new HttpServer(config);
+//
+//        httpServer.addReaction("/", GET, new GetIndexPageController(categoryService, freemarkerTemplate));
+//
+//        httpServer.addReaction("/v1/categories/", GET, new GetCategoriesController(categoryService));
+//        httpServer.addReaction("/v1/products/", GET, new GetProductsController(productService));
+//
+//        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
+//
+//        httpServer.deploy();
     }
 
     private static Properties getProperties() {
