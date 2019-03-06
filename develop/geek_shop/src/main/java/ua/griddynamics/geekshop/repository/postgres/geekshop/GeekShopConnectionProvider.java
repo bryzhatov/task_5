@@ -41,6 +41,7 @@ public class GeekShopConnectionProvider implements Supplier<Connection> {
         dataSource.setMaxTotal(Integer.parseInt(properties.getProperty("db.maxSizePool")));
         dataSource.setMaxIdle(Integer.parseInt(properties.getProperty("db.maxIdleSizePool")));
         dataSource.setMinIdle(Integer.parseInt(properties.getProperty("db.minIdleSizePool")));
+        dataSource.setMaxWaitMillis(Integer.parseInt(properties.getProperty("db.maxWaitMillisConnection")));
         return dataSource;
     }
 }
