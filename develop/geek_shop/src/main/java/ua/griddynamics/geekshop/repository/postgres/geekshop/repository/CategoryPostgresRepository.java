@@ -28,6 +28,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
         try (Connection connection = connectionSupplier.get()) {
 
             List<CategoryTree> categoryTrees = new ArrayList<>();
+
             List<Category> categories = getMainCategories(connection);
 
             for (Category category : categories) {
@@ -43,7 +44,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
     }
 
     private void find(Connection connection, CategoryTree parent, int deep) {
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"categories\" WHERE parent_id = ?")) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM categories WHERE parent_id = ?")) {
             statement.setInt(1, parent.getCategory().getId());
 
             if (deep > 1) {
