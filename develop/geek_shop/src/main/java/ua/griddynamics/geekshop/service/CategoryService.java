@@ -18,7 +18,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<CategoryTree> getCategories(int deep, int parentId) {
-        return categoryRepository.getCategories(deep, parentId);
+    public List<CategoryTree> getCategories(int deep, int categoryId) {
+        return categoryRepository.getCategories(deep, categoryId);
     }
 }

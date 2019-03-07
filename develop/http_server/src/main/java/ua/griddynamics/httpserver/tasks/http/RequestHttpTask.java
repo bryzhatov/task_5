@@ -64,6 +64,7 @@ public class RequestHttpTask extends HttpTask {
                 executeReaction(response);
 
             } catch (RuntimeException e) {
+                log.error("Client error", e);
                 if (response.getStatus() == 0) {
                     response.setStatus(500);
                     request.addHeader("Connection", "close");

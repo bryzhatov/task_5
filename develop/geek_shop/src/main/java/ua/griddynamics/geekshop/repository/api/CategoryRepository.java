@@ -10,7 +10,8 @@ import java.util.List;
  * @since 2019-02-20
  */
 public interface CategoryRepository {
-    List<Category> getMainCategories();
+
+    Category getCategory(int id);
 
     List<CategoryTree> getCategories(int deep, int categoryId);
 }
