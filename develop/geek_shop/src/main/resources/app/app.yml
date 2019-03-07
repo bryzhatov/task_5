@@ -1,0 +1,13 @@
+server:
+  host: 127.0.0.1
+  port: 8080
+db:
+  driver: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:5432/geek_shop_db
+  user: postgres
+  password: dima
+  initSizePool: 10
+  maxSizePool: 20
+  maxIdleSizePool: 15
+  minIdleSizePool: 10
+  maxWaitMillisConnection: 1000

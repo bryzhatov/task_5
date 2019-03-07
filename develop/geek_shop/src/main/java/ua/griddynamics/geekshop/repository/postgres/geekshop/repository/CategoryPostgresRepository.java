@@ -5,7 +5,10 @@ import ua.griddynamics.geekshop.entity.util.CategoryTree;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -20,21 +23,29 @@ public class CategoryPostgresRepository implements CategoryRepository {
         this.connectionSupplier = connectionSupplier;
     }
 
-    public List<CategoryTree> getC(int deep) {
+    @Override
+    public List<CategoryTree> getCategories(int deep, int categoryId) {
         try (Connection connection = connectionSupplier.get()) {
 
             List<CategoryTree> categoryTrees = new ArrayList<>();
 
-            List<Category> categories = getMainCategories(connection);
-            Map<Integer, CategoryTree> list = new HashMap<>();
+            if (categoryId == 0) {
+                List<Category> categories = getMainCategories(connection);
+                Map<Integer, CategoryTree> mapCategoriesTree = new HashMap<>();
 
-            for (Category category : categories) {
-                list.put(category.getId(), new CategoryTree(category));
+                for (Category category : categories) {
+                    CategoryTree categoryTree = new CategoryTree(category);
+                    categoryTrees.add(categoryTree);
+                    mapCategoriesTree.put(category.getId(), categoryTree);
+                }
+
+                findWidth(mapCategoriesTree, deep);
+
+            } else {
+                CategoryTree categoryTree = new CategoryTree(new Category(categoryId, "", 0));
+                categoryTrees.add(categoryTree);
+                findWidth(Collections.singletonMap(categoryId, categoryTree), deep);
             }
-
-            findWidth(list, deep);
-
-            System.out.println(list);
 
             return categoryTrees;
         } catch (SQLException e) {
@@ -43,7 +54,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
     }
 
     public void findWidth(Map<Integer, CategoryTree> categoryTrees, int deep) {
-        if (deep > 0) {
+        if (deep > 1) {
             try (Connection connection = connectionSupplier.get()) {
                 try (Statement statement = connection.createStatement()) {
                     try (ResultSet resultSet = statement.executeQuery(buildSql(categoryTrees))) {
@@ -54,9 +65,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
                             categoryTrees.get(category.getParentId()).addChildren(categoryTree);
                             map.put(category.getId(), categoryTree);
                         }
-                        if (deep > 1) {
-                            findWidth(map, --deep);
-                        }
+                        findWidth(map, --deep);
                     }
                 }
             } catch (SQLException e) {
@@ -79,66 +88,6 @@ public class CategoryPostgresRepository implements CategoryRepository {
         }
         stringBuilder.append(")");
         return stringBuilder.toString();
-    }
-
-    public List<CategoryTree> getCategories(int deep) {
-        try (Connection connection = connectionSupplier.get()) {
-
-            List<CategoryTree> categoryTrees = new ArrayList<>();
-
-            List<Category> categories = getMainCategories(connection);
-
-            for (Category category : categories) {
-                CategoryTree categoryTree = new CategoryTree(category);
-                categoryTrees.add(categoryTree);
-
-                find(connection, categoryTree, deep);
-            }
-            return categoryTrees;
-        } catch (SQLException e) {
-            throw new DataBaseException(e.getMessage(), e);
-        }
-    }
-
-    private void find(Connection connection, CategoryTree parent, int deep) {
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM categories WHERE parent_id = ?")) {
-            statement.setInt(1, parent.getCategory().getId());
-
-            if (deep > 1) {
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    while (resultSet.next()) {
-                        CategoryTree child = new CategoryTree(categoryMapper(resultSet));
-                        parent.addChildren(child);
-                        find(connection, child, --deep);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new DataBaseException(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public List<Category> getAllCategories() throws DataBaseException {
-        List<Category> categories = new ArrayList<>();
-
-        try (Connection connection = connectionSupplier.get()) {
-
-            try (ResultSet resultSet = connection
-                    .createStatement().executeQuery("SELECT * FROM categories ORDER BY parent_id")) {
-
-                if (resultSet != null) {
-                    while (resultSet.next()) {
-                        Category category = categoryMapper(resultSet);
-                        categories.add(category);
-                    }
-                    return categories;
-                }
-            }
-        } catch (SQLException e) {
-            throw new DataBaseException(e.getMessage(), e);
-        }
-        return categories;
     }
 
     @Override

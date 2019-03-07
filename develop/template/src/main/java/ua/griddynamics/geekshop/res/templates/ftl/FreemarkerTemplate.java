@@ -22,6 +22,21 @@ public class FreemarkerTemplate implements TemplateEngine {
     }
 
     @Override
+    public String render(String fileTemplate) throws TemplateException {
+        try {
+            StringWriter writer = new StringWriter();
+            writer.getBuffer().replace(0, writer.getBuffer().length(), "");
+
+            Template templateEngine = cfg.getTemplate(fileTemplate);
+            templateEngine.process(new Object(), writer);
+
+            return writer.toString();
+        } catch (IOException | TemplateException e) {
+            throw new TemplateEngineException("Can't render template", e);
+        }
+    }
+
+    @Override
     public String render(String fileName, Object pageValue) throws TemplateEngineException {
         try {
             StringWriter writer = new StringWriter();

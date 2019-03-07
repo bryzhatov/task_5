@@ -1,15 +1,19 @@
 package ua.griddynamics.geekshop;
 
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.geekshop.controllers.page.GetIndexPageController;
-import ua.griddynamics.geekshop.controllers.rest.GetCategoriesController;
-import ua.griddynamics.geekshop.controllers.rest.GetProductsController;
+import org.yaml.snakeyaml.Yaml;
+import ua.griddynamics.geekshop.controllers.page.PageController;
+import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
+import ua.griddynamics.geekshop.controllers.rest.ProductsRestController;
+import ua.griddynamics.geekshop.repository.api.CategoryRepository;
+import ua.griddynamics.geekshop.repository.api.ProductRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.CategoryPostgresRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.ProductPostgresRepository;
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.geekshop.service.ProductService;
+import ua.griddynamics.geekshop.util.AntonConfigAdapter;
 import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
 import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
@@ -17,6 +21,7 @@ import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.Properties;
 
 import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
@@ -29,40 +34,58 @@ import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
         Properties properties = getProperties();
+
+        // Configs, Connections
+        HttpServer httpServer = new HttpServer(AntonConfigAdapter.getConfig(properties));
+        FreemarkerTemplate freemarkerTemplate = new FreemarkerTemplate("/web");
         GeekShopConnectionProvider geekShopConnectionProvider = new GeekShopConnectionProvider(properties);
 
-        CategoryPostgresRepository categoryPostgresRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
-        ProductPostgresRepository productPostgresRepository = new ProductPostgresRepository(geekShopConnectionProvider);
+        // Repositories
+        CategoryRepository categoryRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
+        ProductRepository productRepository = new ProductPostgresRepository(geekShopConnectionProvider);
 
-        CategoryService categoryService = new CategoryService(categoryPostgresRepository);
+        // Services
+        CategoryService categoryService = new CategoryService(categoryRepository);
+        ProductService productService = new ProductService(productRepository);
 
-        categoryPostgresRepository.getC(1);
+        // Controllers: REST
+        CategoryRestController categoryRestController = new CategoryRestController(categoryService);
+        ProductsRestController getProductsController = new ProductsRestController(productService);
 
-//        ProductService productService = new ProductService(productPostgresRepository);
-//
-//        HttpServerConfig config = new HttpServerConfig(properties);
-//        FreemarkerTemplate freemarkerTemplate = new FreemarkerTemplate("/web");
-//
-//        HttpServer httpServer = new HttpServer(config);
-//
-//        httpServer.addReaction("/", GET, new GetIndexPageController(categoryService, freemarkerTemplate));
-//
-//        httpServer.addReaction("/v1/categories/", GET, new GetCategoriesController(categoryService));
-//        httpServer.addReaction("/v1/products/", GET, new GetProductsController(productService));
-//
-//        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
-//
-//        httpServer.deploy();
+        // Controllers: Page
+        PageController pageController = new PageController(categoryService, freemarkerTemplate);
+
+        // Reactions
+        httpServer.addReaction("/", GET, pageController::getIndex);
+        httpServer.addReaction("/v1/categories/", GET, categoryRestController::getCategories);
+        httpServer.addReaction("/v1/products/", GET, getProductsController::getAllProducts);
+        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
+
+        httpServer.deploy();
     }
 
     private static Properties getProperties() {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Properties properties = new Properties();
-        try (InputStream resourceStream = loader.getResourceAsStream("app/app.properties")) {
-            properties.load(resourceStream);
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        try (InputStream resourceStream = loader.getResourceAsStream("app/app.yml")) {
+            Map<String, Object> map = new Yaml().load(resourceStream);
+            convertMapToProperties(map, properties, "");
+
         } catch (IOException e) {
             log.fatal("Can't load DB properties", e);
         }
         return properties;
+    }
+
+    private static void convertMapToProperties(Map<String, Object> map, Properties properties, String domainName) {
+        if (map.size() > 0) {
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                if (entry.getValue() instanceof Map) {
+                    convertMapToProperties((Map<String, Object>) entry.getValue(), properties, entry.getKey());
+                } else {
+                    properties.setProperty(domainName + "." + entry.getKey(), entry.getValue().toString());
+                }
+            }
+        }
     }
 }

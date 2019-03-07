@@ -19,11 +19,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<CategoryTree> getCategories(int deep) {
-        return categoryRepository.getCategories(deep);
-    }
-
-    public List<Category> getCategories() {
-        return categoryRepository.getAllCategories();
+    public List<CategoryTree> getCategories(int deep, int parentId) {
+        return categoryRepository.getCategories(deep, parentId);
     }
 }
