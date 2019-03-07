@@ -13,25 +13,25 @@ function requestCategories(deep) {
 
 function addMainCategory(element, id) {
 
-    if (element.childCategory.length) {
+    if (element.childCategory) {
         var dropMenu = document.getElementById('dropMenu').cloneNode(true)
-        dropMenu.childNodes[3].id = element.category.id;
+        dropMenu.childNodes[3].id = element.id;
         dropMenu.removeAttribute('hidden');
-        dropMenu.childNodes[1].textContent = element.category.name;
+        dropMenu.childNodes[1].textContent = element.name;
         document.getElementById(id).appendChild(dropMenu);
     } else {
-        document.getElementById(id).innerHTML += '<li><a href="#">' + element.category.name+'</a></li>';
+        document.getElementById(id).innerHTML += '<li><a href="#">' + element.name+'</a></li>';
     }
 
     addChildCategory(element);
 }
 
 function addChildCategory(element) {
-    if (element.childCategory.length) {
+    if (element.childCategory) {
         var childCategory = element.childCategory;
 
         childCategory.forEach(function(entry) {
-            addMainCategory(entry, element.category.id);
+            addMainCategory(entry, element.id);
         });
     }
 }

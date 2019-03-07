@@ -1,7 +1,7 @@
 package ua.griddynamics.geekshop.repository.api;
 
 import ua.griddynamics.geekshop.entity.Category;
-import ua.griddynamics.geekshop.entity.util.CategoryTree;
+import ua.griddynamics.geekshop.util.json.CategoryTree;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package ua.griddynamics.geekshop.controllers.rest;
 
-import com.google.gson.Gson;
+import ua.griddynamics.geekshop.util.json.converter.JsonConverter;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
@@ -11,9 +11,11 @@ import ua.griddynamics.httpserver.api.HttpResponse;
  */
 public class CategoryRestController {
     private CategoryService categoryService;
+    private JsonConverter jsonConverter;
 
-    public CategoryRestController(CategoryService categoryService) {
+    public CategoryRestController(CategoryService categoryService, JsonConverter jsonConverter) {
         this.categoryService = categoryService;
+        this.jsonConverter = jsonConverter;
     }
 
     public void getCategories(HttpRequest request, HttpResponse response) {
@@ -30,7 +32,7 @@ public class CategoryRestController {
         }
 
         if (deep > 0 && categoryId >= 0) {
-            response.write(new Gson().toJson(categoryService.getCategories(deep, categoryId)));
+            response.write(jsonConverter.toJson(categoryService.getCategories(deep, categoryId)));
         } else {
             response.setStatus(400);
         }

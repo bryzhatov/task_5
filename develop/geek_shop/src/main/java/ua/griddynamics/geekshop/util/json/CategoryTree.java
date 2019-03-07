@@ -1,4 +1,4 @@
-package ua.griddynamics.geekshop.entity.util;
+package ua.griddynamics.geekshop.util.json;
 
 import lombok.Data;
 import ua.griddynamics.geekshop.entity.Category;
@@ -12,11 +12,15 @@ import java.util.List;
  */
 @Data
 public class CategoryTree {
-    private final Category category;
+    private final int id;
+    private final String name;
+    private final int parentId;
     private final List<CategoryTree> childCategory;
 
     public CategoryTree(Category mainCategory) {
-        this.category = mainCategory;
+        this.id = mainCategory.getId();
+        this.name = mainCategory.getName();
+        this.parentId = mainCategory.getParentId();
         childCategory = new ArrayList<>();
     }
 

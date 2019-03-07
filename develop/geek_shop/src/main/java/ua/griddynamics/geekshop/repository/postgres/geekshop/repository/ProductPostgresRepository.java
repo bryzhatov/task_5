@@ -31,7 +31,7 @@ public class ProductPostgresRepository implements ProductRepository {
         try (Connection connection = connectionSupplier.get()) {
 
             try (ResultSet resultSet = connection
-                    .createStatement().executeQuery("SELECT * FROM \"products\"")) {
+                    .createStatement().executeQuery("SELECT * FROM products")) {
 
                 if (resultSet != null) {
                     while (resultSet.next()) {

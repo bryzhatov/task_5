@@ -1,8 +1,7 @@
 package ua.griddynamics.geekshop.service;
 
 import lombok.Setter;
-import ua.griddynamics.geekshop.entity.Category;
-import ua.griddynamics.geekshop.entity.util.CategoryTree;
+import ua.griddynamics.geekshop.util.json.CategoryTree;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 
 import java.util.List;

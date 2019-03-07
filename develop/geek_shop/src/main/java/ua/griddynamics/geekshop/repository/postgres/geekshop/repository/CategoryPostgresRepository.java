@@ -1,7 +1,7 @@
 package ua.griddynamics.geekshop.repository.postgres.geekshop.repository;
 
 import ua.griddynamics.geekshop.entity.Category;
-import ua.griddynamics.geekshop.entity.util.CategoryTree;
+import ua.griddynamics.geekshop.util.json.CategoryTree;
 import ua.griddynamics.geekshop.exception.DataBaseException;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 

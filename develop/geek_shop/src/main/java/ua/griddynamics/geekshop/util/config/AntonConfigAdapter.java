@@ -1,4 +1,4 @@
-package ua.griddynamics.geekshop.util;
+package ua.griddynamics.geekshop.util.config;
 
 import ua.griddynamics.httpserver.api.config.HttpServerConfig;
 

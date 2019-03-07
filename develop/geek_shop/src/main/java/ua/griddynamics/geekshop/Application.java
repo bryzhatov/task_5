@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.Yaml;
 import ua.griddynamics.geekshop.controllers.page.PageController;
 import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
 import ua.griddynamics.geekshop.controllers.rest.ProductsRestController;
+import ua.griddynamics.geekshop.util.json.factory.JsonFactory;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 import ua.griddynamics.geekshop.repository.api.ProductRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
@@ -13,9 +14,8 @@ import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.ProductP
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.geekshop.service.ProductService;
-import ua.griddynamics.geekshop.util.AntonConfigAdapter;
+import ua.griddynamics.geekshop.util.config.AntonConfigAdapter;
 import ua.griddynamics.httpserver.HttpServer;
-import ua.griddynamics.httpserver.api.config.HttpServerConfig;
 import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class Application {
         ProductService productService = new ProductService(productRepository);
 
         // Controllers: REST
-        CategoryRestController categoryRestController = new CategoryRestController(categoryService);
+        CategoryRestController categoryRestController = new CategoryRestController(categoryService, JsonFactory.create("gson"));
         ProductsRestController getProductsController = new ProductsRestController(productService);
 
         // Controllers: Page
