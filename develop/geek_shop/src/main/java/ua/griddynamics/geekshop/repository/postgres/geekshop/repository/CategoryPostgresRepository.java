@@ -38,12 +38,13 @@ public class CategoryPostgresRepository implements CategoryRepository {
 
     @Override
     public List<CategoryTree> getCategories(int deep, int categoryId) {
-        try (Connection connection = connectionSupplier.get()) {
+        try {
 
             List<CategoryTree> categoryTrees = new ArrayList<>();
 
             if (categoryId == 0) {
-                List<Category> categories = getMainCategories(connection);
+                List<Category> categories = getMainCategories();
+
                 Map<Integer, CategoryTree> mapCategoriesTree = new HashMap<>();
 
                 for (Category category : categories) {
@@ -104,18 +105,19 @@ public class CategoryPostgresRepository implements CategoryRepository {
         return stringBuilder.toString();
     }
 
-    private List<Category> getMainCategories(Connection connection) {
+    private List<Category> getMainCategories() {
         List<Category> categories = new ArrayList<>();
 
-        try (ResultSet resultSet = connection
-                .createStatement().executeQuery("SELECT * FROM categories WHERE parent_id = 0")) {
+        try (Connection connection = connectionSupplier.get()) {
+            try (ResultSet resultSet = connection
+                    .createStatement().executeQuery("SELECT * FROM categories WHERE parent_id = 0")) {
 
-            if (resultSet != null) {
-                while (resultSet.next()) {
-                    Category category = categoryMapper(resultSet);
-                    categories.add(category);
+                if (resultSet != null) {
+                    while (resultSet.next()) {
+                        Category category = categoryMapper(resultSet);
+                        categories.add(category);
+                    }
                 }
-                return categories;
             }
         } catch (SQLException e) {
             throw new DataBaseException(e.getMessage(), e);
