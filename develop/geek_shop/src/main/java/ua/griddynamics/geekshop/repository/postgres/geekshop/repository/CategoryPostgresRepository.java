@@ -53,7 +53,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
         }
     }
 
-    public void findWidth(Map<Integer, CategoryTree> categoryTrees, int deep) {
+    private void findWidth(Map<Integer, CategoryTree> categoryTrees, int deep) throws SQLException {
         if (deep > 1) {
             try (Connection connection = connectionSupplier.get()) {
                 try (Statement statement = connection.createStatement()) {
@@ -68,8 +68,6 @@ public class CategoryPostgresRepository implements CategoryRepository {
                         findWidth(map, --deep);
                     }
                 }
-            } catch (SQLException e) {
-
             }
         }
     }
