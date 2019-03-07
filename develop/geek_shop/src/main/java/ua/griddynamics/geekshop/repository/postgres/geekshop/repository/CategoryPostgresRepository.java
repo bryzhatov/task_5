@@ -8,6 +8,7 @@ import ua.griddynamics.geekshop.util.json.CategoryTree;
 import java.sql.*;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * @author Dmitry Bryzhatov
@@ -71,8 +72,14 @@ public class CategoryPostgresRepository implements CategoryRepository {
     private void findChild(Map<Integer, CategoryTree> categoryMap, int deep) throws SQLException {
         if (deep > 1 && categoryMap.size() > 0) {
             try (Connection connection = connectionSupplier.get()) {
-                try (Statement statement = connection.createStatement()) {
-                    try (ResultSet resultSet = statement.executeQuery(buildSql(categoryMap))) {
+                try (PreparedStatement statement = connection.prepareStatement(buildSql(categoryMap))) {
+                    int i = 1;
+
+                    for (Integer integer : categoryMap.keySet()) {
+                        statement.setInt(i++, integer);
+                    }
+
+                    try (ResultSet resultSet = statement.executeQuery()) {
                         Map<Integer, CategoryTree> childCategoryMap = new HashMap<>();
                         while (resultSet.next()) {
 
@@ -90,19 +97,8 @@ public class CategoryPostgresRepository implements CategoryRepository {
     }
 
     private String buildSql(Map<Integer, CategoryTree> map) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("SELECT * FROM categories WHERE parent_id IN (");
-
-        Iterator<Map.Entry<Integer, CategoryTree>> iterator = map.entrySet().iterator();
-
-        while (iterator.hasNext()) {
-            stringBuilder.append(iterator.next().getKey());
-            if (iterator.hasNext()) {
-                stringBuilder.append(", ");
-            }
-        }
-        stringBuilder.append(")");
-        return stringBuilder.toString();
+        return "SELECT * FROM categories WHERE parent_id IN ("+
+                map.keySet().stream().map(i -> "?").collect(Collectors.joining(",")) + ")";
     }
 
     private List<Category> getMainCategories() {

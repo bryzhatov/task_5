@@ -1,7 +1,7 @@
 package ua.griddynamics.geekshop.controllers.rest;
 
-import ua.griddynamics.geekshop.util.json.converter.JsonConverter;
 import ua.griddynamics.geekshop.service.CategoryService;
+import ua.griddynamics.geekshop.util.json.converter.JsonConverter;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 
@@ -16,6 +16,21 @@ public class CategoryRestController {
     public CategoryRestController(CategoryService categoryService, JsonConverter jsonConverter) {
         this.categoryService = categoryService;
         this.jsonConverter = jsonConverter;
+    }
+
+    public void getCategory(HttpRequest request, HttpResponse response) {
+        String idParam = request.getParameter("id");
+        int id = 0;
+
+        if (idParam != null) {
+            id = Integer.valueOf(idParam);
+        }
+
+        if (id > 0) {
+            response.write(jsonConverter.toJson(categoryService.getCategory(id)));
+        } else {
+            response.setStatus(400);
+        }
     }
 
     public void getCategories(HttpRequest request, HttpResponse response) {

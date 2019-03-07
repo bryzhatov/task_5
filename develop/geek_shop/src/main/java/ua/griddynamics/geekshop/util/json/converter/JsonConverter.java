@@ -7,5 +7,5 @@ package ua.griddynamics.geekshop.util.json.converter;
 public interface JsonConverter {
     String toJson(Object object);
 
-    <T> T fromJson(String json, Class c);
+    <T> T fromJson(String json, Class<T> c);
 }

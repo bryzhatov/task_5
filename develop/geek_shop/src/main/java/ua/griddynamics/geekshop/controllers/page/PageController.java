@@ -3,12 +3,11 @@ package ua.griddynamics.geekshop.controllers.page;
 import freemarker.template.TemplateException;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
-
-import static java.util.Collections.singletonMap;
 
 /**
  * @author Dmitry Bryzhatov
@@ -34,6 +33,25 @@ public class PageController {
 
         } catch (TemplateException e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public void getCategory(HttpRequest request, HttpResponse response) {
+        String idParam = request.getParameter("id");
+        int id = 0;
+
+        if (idParam != null) {
+            id = Integer.valueOf(idParam);
+        }
+
+        if (id > 0) {
+            try {
+                response.write(templateEngine.render("/pages/category.html", categoryService.getCategory(id)));
+            } catch (TemplateException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            response.setStatus(400);
         }
     }
 }

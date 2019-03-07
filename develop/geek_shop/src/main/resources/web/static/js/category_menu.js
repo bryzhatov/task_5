@@ -1,7 +1,6 @@
 function requestCategories(deep) {
     $.ajax({
         url: "/v1/categories/?deep="+deep,
-        async: false,
         success: function(result) {
             var menu = JSON.parse(result);
             menu.forEach(function(element) {

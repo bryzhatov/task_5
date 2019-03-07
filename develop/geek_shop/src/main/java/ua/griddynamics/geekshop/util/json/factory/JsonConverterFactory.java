@@ -7,11 +7,10 @@ import ua.griddynamics.geekshop.util.json.converter.JsonConverter;
  * @author Dmitry Bryzhatov
  * @since 2019-03-07
  */
-public class JsonFactory {
+public class JsonConverterFactory {
     public static JsonConverter create(String name) {
         switch (name) {
             case "gson":
-                return new GsonConverter();
             default:
                 return new GsonConverter();
         }

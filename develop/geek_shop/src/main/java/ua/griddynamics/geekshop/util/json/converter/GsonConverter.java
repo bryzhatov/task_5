@@ -24,8 +24,8 @@ public class GsonConverter implements JsonConverter {
     }
 
     @Override
-    public <T> T fromJson(String json, Class c) {
-        return (T) gson.fromJson(json, c);
+    public <T> T fromJson(String json, Class<T> c) {
+        return gson.fromJson(json, c);
     }
 
     private static class CollectionAdapter implements JsonSerializer<Collection<?>> {

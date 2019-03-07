@@ -1,8 +1,9 @@
 package ua.griddynamics.geekshop.service;
 
 import lombok.Setter;
-import ua.griddynamics.geekshop.util.json.CategoryTree;
+import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
+import ua.griddynamics.geekshop.util.json.CategoryTree;
 
 import java.util.List;
 
@@ -16,6 +17,10 @@ public class CategoryService {
 
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
+    }
+
+    public Category getCategory(int id) {
+        return categoryRepository.getCategory(id);
     }
 
     public List<CategoryTree> getCategories(int deep, int categoryId) {

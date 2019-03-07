@@ -5,7 +5,6 @@ import org.yaml.snakeyaml.Yaml;
 import ua.griddynamics.geekshop.controllers.page.PageController;
 import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
 import ua.griddynamics.geekshop.controllers.rest.ProductsRestController;
-import ua.griddynamics.geekshop.util.json.factory.JsonFactory;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 import ua.griddynamics.geekshop.repository.api.ProductRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
@@ -15,6 +14,7 @@ import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.geekshop.service.ProductService;
 import ua.griddynamics.geekshop.util.config.AntonConfigAdapter;
+import ua.griddynamics.geekshop.util.json.factory.JsonConverterFactory;
 import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
 
@@ -49,14 +49,18 @@ public class Application {
         ProductService productService = new ProductService(productRepository);
 
         // Controllers: REST
-        CategoryRestController categoryRestController = new CategoryRestController(categoryService, JsonFactory.create("gson"));
+        CategoryRestController categoryRestController = new CategoryRestController(categoryService, JsonConverterFactory.create("gson"));
         ProductsRestController getProductsController = new ProductsRestController(productService);
 
         // Controllers: Page
         PageController pageController = new PageController(categoryService, freemarkerTemplate);
 
-        // Reactions
+        // Reactions: Page
         httpServer.addReaction("/", GET, pageController::getIndex);
+        httpServer.addReaction("/category/", GET, pageController::getCategory);
+
+        // Reactions: REST
+        httpServer.addReaction("/v1/category/", GET, categoryRestController::getCategory);
         httpServer.addReaction("/v1/categories/", GET, categoryRestController::getCategories);
         httpServer.addReaction("/v1/products/", GET, getProductsController::getAllProducts);
         httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
@@ -69,9 +73,11 @@ public class Application {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         try (InputStream resourceStream = loader.getResourceAsStream("app/app.yml")) {
             Map<String, Object> map = new Yaml().load(resourceStream);
+
             convertMapToProperties(map, properties, "");
 
         } catch (IOException e) {
+            // TODO жопа
             log.fatal("Can't load DB properties", e);
         }
         return properties;
@@ -81,7 +87,7 @@ public class Application {
         if (map.size() > 0) {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getValue() instanceof Map) {
-                    convertMapToProperties((Map<String, Object>) entry.getValue(), properties, entry.getKey());
+                    convertMapToProperties((Map<String, Object>) entry.getValue(), properties, domainName + "." + entry.getKey());
                 } else {
                     properties.setProperty(domainName + "." + entry.getKey(), entry.getValue().toString());
                 }

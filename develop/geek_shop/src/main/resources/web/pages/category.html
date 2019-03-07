@@ -1,0 +1,18 @@
+<#include "/static/util/header.html"/>
+
+<div class="container" style="margin-top:5%">
+    <div class="col-lg-4">
+        <img class="group list-group-image" id="product_image" src="" style="width:250px;height:250px;"/>
+    </div>
+    <div class="col-lg-8">
+        ${name}
+    </div>
+</div>
+
+<#include "/static/util/footer.html"/>
+
+<script>
+    $( document ).ready(function() {
+        $(#product_image).attr('src', ${imageLink});
+    });
+</script>
