@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
-import ua.griddynamics.geekshop.service.ProductService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 
@@ -45,14 +44,10 @@ public class PageController {
             id = Integer.valueOf(idParam);
         }
 
-        if (id > 0) {
-            try {
-                response.write(templateEngine.render("/pages/category.html", categoryService.get(id)));
-            } catch (TemplateException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            response.setStatus(400);
+        try {
+            response.write(templateEngine.render("/pages/category.html", categoryService.get(id)));
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -64,14 +59,10 @@ public class PageController {
             id = Integer.valueOf(idParam);
         }
 
-        if (id > 0) {
-            try {
-                response.write(templateEngine.render("/pages/product_info.html", new Category(id, "", 0)));
-            } catch (TemplateException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            response.setStatus(400);
+        try {
+            response.write(templateEngine.render("/pages/product_info.html", new Category(id, "", 0)));
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
         }
     }
 }

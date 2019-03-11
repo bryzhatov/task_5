@@ -18,11 +18,15 @@ public class ProductService {
         this.productRep = productRep;
     }
 
-    public List<Product> getAll() {
-        return productRep.getAll();
+    public List<Product> get(int rating, int count) {
+        return productRep.get(rating, count);
     }
 
     public Product get(int id) {
         return productRep.get(id);
+    }
+
+    public void add(Product product) {
+        productRep.add(product);
     }
 }

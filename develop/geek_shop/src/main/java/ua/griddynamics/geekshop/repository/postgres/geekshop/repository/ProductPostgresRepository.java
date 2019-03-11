@@ -26,18 +26,23 @@ public class ProductPostgresRepository implements ProductRepository {
     }
 
     @Override
-    public List<Product> getAll() throws DataBaseException {
+    public List<Product> get(int rating, int count) throws DataBaseException {
         List<Product> products = new ArrayList<>();
 
         try (Connection connection = connectionSupplier.get()) {
 
-            try (ResultSet resultSet = connection
-                    .createStatement().executeQuery("SELECT * FROM products")) {
+            try (PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM products WHERE rating > ? LIMIT ?")) {
+                statement.setInt(1, rating);
+                statement.setInt(2, count);
 
-                while (resultSet.next()) {
-                    Product product = productMapper(resultSet);
-                    products.add(product);
+                try(ResultSet resultSet = statement.executeQuery()){
+                    while (resultSet.next()) {
+                        Product product = productMapper(resultSet);
+                        products.add(product);
+                    }
                 }
+
                 return products;
             }
         } catch (SQLException e) {
@@ -56,6 +61,31 @@ public class ProductPostgresRepository implements ProductRepository {
                     resultSet.next();
                     return productMapper(resultSet);
                 }
+            }
+        } catch (SQLException e) {
+            throw new DataBaseException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void add(Product product) {
+        try (Connection connection = connectionSupplier.get()) {
+
+            try (PreparedStatement preparedStatement = connection
+                    .prepareStatement("INSERT INTO products(id, count, name, category_id, description, manufacturer_id, price, image_link) " +
+                            "VALUES (?,?,?,?,?,?,?,?)")) {
+                int i = 0;
+                preparedStatement.setInt(++i, product.getId());
+                preparedStatement.setLong(++i, product.getCount());
+                preparedStatement.setString(++i, product.getName());
+                preparedStatement.setLong(++i, product.getCategoryId());
+                preparedStatement.setString(++i, product.getDescription());
+                preparedStatement.setLong(++i, product.getManufacturerId());
+                preparedStatement.setLong(++i, product.getPrice().longValue());
+                preparedStatement.setString(++i, product.getImageLink());
+
+                preparedStatement.execute();
+
             }
         } catch (SQLException e) {
             throw new DataBaseException(e.getMessage(), e);

@@ -1,6 +1,6 @@
-function requestToProducts() {
+function getProductsByRating(rating, count) {
     $.ajax({
-        url: "/v1/products/",
+        url: "/v1/products/?rating=" + rating + "&count="+count,
         success: function(result) {
             var menu = JSON.parse(result);
 

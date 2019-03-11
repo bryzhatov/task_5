@@ -22,21 +22,17 @@ public class ProductRestController {
     }
 
     public void getProduct(HttpRequest request, HttpResponse response) {
-        String idParam = request.getParameter("id");
-        int id = 0;
-
-        if (idParam != null) {
-            id = Integer.valueOf(idParam);
-        }
-
-        if (id > 0) {
-            response.write(converter.toJson(productService.get(id)));
-        } else {
-            response.setStatus(400);
-        }
+        int id = Integer.valueOf(request.getParameter("id"));
+        response.write(converter.toJson(productService.get(id)));
     }
 
-    public void getAllProducts(HttpRequest request, HttpResponse response) {
-        response.write(converter.toJson(productService.getAll()));
+    public void getProductsByRating(HttpRequest request, HttpResponse response) {
+        String ratingStr = request.getParameter("rating");
+        String countStr = request.getParameter("count");
+
+        int rating = ratingStr != null ? Integer.valueOf(ratingStr) : 0;
+        int count = countStr != null ? Integer.valueOf(countStr) : 0;
+
+        response.write(converter.toJson(productService.get(rating, count)));
     }
 }

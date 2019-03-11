@@ -19,37 +19,17 @@ public class CategoryRestController {
     }
 
     public void getCategory(HttpRequest request, HttpResponse response) {
-        String idParam = request.getParameter("id");
-        int id = 0;
-
-        if (idParam != null) {
-            id = Integer.valueOf(idParam);
-        }
-
-        if (id > 0) {
-            response.write(jsonConverter.toJson(categoryService.get(id)));
-        } else {
-            response.setStatus(400);
-        }
+        int id = Integer.valueOf(request.getParameter("id"));
+        response.write(jsonConverter.toJson(categoryService.get(id)));
     }
 
     public void getCategories(HttpRequest request, HttpResponse response) {
         String deepStr = request.getParameter("deep");
         String categoryIdSrt = request.getParameter("categoryId");
 
-        int deep = 0;
-        if (deepStr != null) {
-            deep = Integer.valueOf(deepStr);
-        }
-        int categoryId = 0;
-        if (categoryIdSrt != null) {
-            categoryId = Integer.valueOf(categoryIdSrt);
-        }
+        int deep = deepStr != null ? Integer.valueOf(deepStr) : 0;
+        int categoryId = categoryIdSrt != null ? Integer.valueOf(categoryIdSrt) : 0;
 
-        if (deep > 0 && categoryId >= 0) {
-            response.write(jsonConverter.toJson(categoryService.get(deep, categoryId)));
-        } else {
-            response.setStatus(400);
-        }
+        response.write(jsonConverter.toJson(categoryService.get(deep, categoryId)));
     }
 }

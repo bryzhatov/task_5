@@ -10,6 +10,7 @@ import java.util.List;
  * @since 2019-03-04
  */
 public interface ProductRepository {
-    List<Product> getAll();
+    List<Product> get(int rating, int count);
     Product get(int id);
+    void add(Product product);
 }

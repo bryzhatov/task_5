@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.Yaml;
 import ua.griddynamics.geekshop.controllers.page.PageController;
 import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
 import ua.griddynamics.geekshop.controllers.rest.ProductRestController;
+import ua.griddynamics.geekshop.entity.Product;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 import ua.griddynamics.geekshop.repository.api.ProductRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
@@ -21,9 +22,11 @@ import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
 import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
 
@@ -66,7 +69,7 @@ public class Application {
         httpServer.addReaction("/v1/category/", GET, categoryRestController::getCategory);
         httpServer.addReaction("/v1/categories/", GET, categoryRestController::getCategories);
 
-        httpServer.addReaction("/v1/products/", GET, getProductsController::getAllProducts);
+        httpServer.addReaction("/v1/products/", GET, getProductsController::getProductsByRating);
         httpServer.addReaction("/v1/product/", GET, getProductsController::getProduct);
         httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
 
@@ -98,6 +101,13 @@ public class Application {
                     properties.setProperty(domainName + "." + entry.getKey(), entry.getValue().toString());
                 }
             }
+        }
+    }
+
+    private static void add(ProductService productService) {
+        for (int i = 1006; i < 10000; i++) {
+            productService.add(new Product(i, new Random().nextInt(10), "Phone" + i, 2, "/static/img/default.png",
+                    new BigDecimal(100 + new Random().nextInt(10000)), "No description", 1 + new Random().nextInt(2)));
         }
     }
 }
