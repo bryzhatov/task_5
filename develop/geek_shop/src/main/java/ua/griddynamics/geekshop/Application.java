@@ -87,7 +87,7 @@ public class Application {
         if (map.size() > 0) {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getValue() instanceof Map) {
-                    convertMapToProperties((Map<String, Object>) entry.getValue(), properties, domainName + "." + entry.getKey());
+                    convertMapToProperties((Map<String, Object>) entry.getValue(), properties, domainName.equals("") ? entry.getKey() : domainName + "." + entry.getKey());
                 } else {
                     properties.setProperty(domainName + "." + entry.getKey(), entry.getValue().toString());
                 }
