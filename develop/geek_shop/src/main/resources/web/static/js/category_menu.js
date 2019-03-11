@@ -1,10 +1,11 @@
 function requestCategories(deep) {
     $.ajax({
-        url: "/v1/categories/?deep="+deep,
+        url: "/v1/categories/?deep=" + deep,
         success: function(result) {
             var menu = JSON.parse(result);
+
             menu.forEach(function(element) {
-            addMainCategory(element, 'menu')
+                addMainCategory(element, 'menu')
             });
         }
     });

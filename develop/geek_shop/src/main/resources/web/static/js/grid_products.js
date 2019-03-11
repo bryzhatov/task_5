@@ -1,9 +1,9 @@
 function requestToProducts() {
     $.ajax({
         url: "/v1/products/",
-        async: false,
         success: function(result) {
             var menu = JSON.parse(result);
+
             menu.forEach(function(element) {
                 addProductToGrid(element);
             });

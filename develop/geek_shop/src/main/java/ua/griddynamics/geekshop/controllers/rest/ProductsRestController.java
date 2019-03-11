@@ -12,7 +12,6 @@ import ua.griddynamics.httpserver.api.Reaction;
  * @since 2019-03-04
  */
 public class ProductsRestController {
-
     @Setter
     private ProductService productService;
 

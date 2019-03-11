@@ -3,7 +3,6 @@ package ua.griddynamics.geekshop.controllers.page;
 import freemarker.template.TemplateException;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.geekshop.entity.Category;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;

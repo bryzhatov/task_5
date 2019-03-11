@@ -40,6 +40,7 @@ public class GsonConverter implements JsonConverter {
                 JsonElement element = context.serialize(child);
                 array.add(element);
             }
+
             return array;
         }
     }

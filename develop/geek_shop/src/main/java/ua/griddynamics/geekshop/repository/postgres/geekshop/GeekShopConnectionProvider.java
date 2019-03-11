@@ -31,17 +31,18 @@ public class GeekShopConnectionProvider implements Supplier<Connection> {
 
     private BasicDataSource getPooledConnection(Properties properties) {
         BasicDataSource dataSource = new BasicDataSource();
+
         dataSource.setDriverClassName(properties.getProperty("db.driver"));
         dataSource.setUrl(properties.getProperty("db.url"));
         dataSource.setUsername(properties.getProperty("db.user"));
         dataSource.setPassword(properties.getProperty("db.password"));
-
 
         dataSource.setInitialSize(Integer.parseInt(properties.getProperty("db.pool.initSizePool")));
         dataSource.setMaxTotal(Integer.parseInt(properties.getProperty("db.pool.maxSizePool")));
         dataSource.setMaxIdle(Integer.parseInt(properties.getProperty("db.pool.maxIdleSizePool")));
         dataSource.setMinIdle(Integer.parseInt(properties.getProperty("db.pool.minIdleSizePool")));
         dataSource.setMaxWaitMillis(Integer.parseInt(properties.getProperty("db.pool.maxWaitMillisConnection")));
+
         return dataSource;
     }
 }

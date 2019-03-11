@@ -70,6 +70,7 @@ public class Application {
 
     private static Properties getProperties() {
         Properties properties = new Properties();
+
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         try (InputStream resourceStream = loader.getResourceAsStream("app/app.yml")) {
             Map<String, Object> map = new Yaml().load(resourceStream);
@@ -80,6 +81,7 @@ public class Application {
             // TODO жопа
             log.fatal("Can't load DB properties", e);
         }
+
         return properties;
     }
 
