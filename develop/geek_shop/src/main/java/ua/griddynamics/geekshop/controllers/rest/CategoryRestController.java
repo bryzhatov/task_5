@@ -27,7 +27,7 @@ public class CategoryRestController {
         }
 
         if (id > 0) {
-            response.write(jsonConverter.toJson(categoryService.getCategory(id)));
+            response.write(jsonConverter.toJson(categoryService.get(id)));
         } else {
             response.setStatus(400);
         }
@@ -47,7 +47,7 @@ public class CategoryRestController {
         }
 
         if (deep > 0 && categoryId >= 0) {
-            response.write(jsonConverter.toJson(categoryService.getCategories(deep, categoryId)));
+            response.write(jsonConverter.toJson(categoryService.get(deep, categoryId)));
         } else {
             response.setStatus(400);
         }

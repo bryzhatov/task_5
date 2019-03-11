@@ -18,9 +18,12 @@ function addProductToGrid(element) {
     templateProduct.id = element.id;
     templateProduct.removeAttribute('hidden');
     divProducts.appendChild(templateProduct);
-
     $('#'+element.id).find('#product_name').text(element.name);
-    $('#'+element.id).find('#product_price').text(element.price+' $');
+
+    var $link = $('#'+element.id).find('#product_link');
+    $link.attr('href', $link.attr('href') + element.id);
+
+    $('#'+element.id).find('#product_price').text(element.price + ' $');
     $('#'+element.id).find('#product_description').text(element.description);
     $('#'+element.id).find('#product_image').attr('src', element.imageLink);
 }

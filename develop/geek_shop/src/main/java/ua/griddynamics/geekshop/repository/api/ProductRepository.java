@@ -10,5 +10,6 @@ import java.util.List;
  * @since 2019-03-04
  */
 public interface ProductRepository {
-    List<Product> getAllProducts();
+    List<Product> getAll();
+    Product get(int id);
 }

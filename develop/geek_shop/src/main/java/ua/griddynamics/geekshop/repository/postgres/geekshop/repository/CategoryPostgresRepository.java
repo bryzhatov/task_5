@@ -22,7 +22,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
     }
 
     @Override
-    public Category getCategory(int id) {
+    public Category get(int id) {
         try (Connection connection = connectionSupplier.get()) {
 
             try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM categories WHERE id = ?")) {
@@ -38,7 +38,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
     }
 
     @Override
-    public List<CategoryTree> getCategories(int deep, int categoryId) {
+    public List<CategoryTree> get(int deep, int categoryId) {
         try {
 
             List<CategoryTree> categoryTrees = new ArrayList<>();
@@ -57,7 +57,7 @@ public class CategoryPostgresRepository implements CategoryRepository {
                 findChild(mapCategoriesTree, deep);
 
             } else {
-                CategoryTree categoryTree = new CategoryTree(getCategory(categoryId));
+                CategoryTree categoryTree = new CategoryTree(get(categoryId));
                 categoryTrees.add(categoryTree);
 
                 findChild(Collections.singletonMap(categoryId, categoryTree), deep);

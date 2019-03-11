@@ -12,13 +12,17 @@ import java.util.List;
  */
 public class ProductService {
     @Setter
-    private ProductRepository productRepository;
+    private ProductRepository productRep;
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductService(ProductRepository productRep) {
+        this.productRep = productRep;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.getAllProducts();
+    public List<Product> getAll() {
+        return productRep.getAll();
+    }
+
+    public Product get(int id) {
+        return productRep.get(id);
     }
 }

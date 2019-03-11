@@ -7,6 +7,7 @@ import ua.griddynamics.geekshop.repository.api.ProductRepository;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class ProductPostgresRepository implements ProductRepository {
     }
 
     @Override
-    public List<Product> getAllProducts() throws DataBaseException {
+    public List<Product> getAll() throws DataBaseException {
         List<Product> products = new ArrayList<>();
 
         try (Connection connection = connectionSupplier.get()) {
@@ -33,18 +34,32 @@ public class ProductPostgresRepository implements ProductRepository {
             try (ResultSet resultSet = connection
                     .createStatement().executeQuery("SELECT * FROM products")) {
 
-                if (resultSet != null) {
-                    while (resultSet.next()) {
-                        Product product = productMapper(resultSet);
-                        products.add(product);
-                    }
-                    return products;
+                while (resultSet.next()) {
+                    Product product = productMapper(resultSet);
+                    products.add(product);
+                }
+                return products;
+            }
+        } catch (SQLException e) {
+            throw new DataBaseException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Product get(int id) {
+        try (Connection connection = connectionSupplier.get()) {
+
+            try (PreparedStatement preparedStatement = connection
+                    .prepareStatement("SELECT * FROM products WHERE id = ?")) {
+                preparedStatement.setInt(1, id);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    resultSet.next();
+                    return productMapper(resultSet);
                 }
             }
         } catch (SQLException e) {
             throw new DataBaseException(e.getMessage(), e);
         }
-        return products;
     }
 
     private Product productMapper(ResultSet resultSet) throws SQLException {
