@@ -55,7 +55,7 @@ public class Application {
         ProductRestController getProductsController = new ProductRestController(productService, jsonConverter);
 
         // Controllers: Page
-        PageController pageController = new PageController(categoryService, productService, freemarkerTemplate);
+        PageController pageController = new PageController(categoryService, freemarkerTemplate);
 
         // Reactions: Page
         httpServer.addReaction("/", GET, pageController::getIndex);

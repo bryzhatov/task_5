@@ -19,12 +19,9 @@ public class PageController {
     private final TemplateEngine templateEngine;
     @Setter
     private CategoryService categoryService;
-    @Setter
-    private ProductService productService;
 
-    public PageController(CategoryService categoryService, ProductService productService, TemplateEngine templateEngine) {
+    public PageController(CategoryService categoryService, TemplateEngine templateEngine) {
         this.categoryService = categoryService;
-        this.productService = productService;
         this.templateEngine = templateEngine;
     }
 

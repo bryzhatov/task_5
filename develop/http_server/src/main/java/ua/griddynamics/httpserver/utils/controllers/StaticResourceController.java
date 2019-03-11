@@ -74,6 +74,7 @@ public class StaticResourceController implements Reaction {
             MIME_TYPES.put("js", "text/javascript");
             MIME_TYPES.put("jpeg", "image/jpeg");
             MIME_TYPES.put("jpg", "image/jpg");
+            MIME_TYPES.put("png", "image/png");
         }
 
         public static String get(String fileName) {
