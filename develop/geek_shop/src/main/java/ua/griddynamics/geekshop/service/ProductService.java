@@ -26,6 +26,10 @@ public class ProductService {
         return productRep.get(id);
     }
 
+    public List<Product> get(List<String> conditions){
+        return productRep.get(conditions);
+    }
+
     public void add(Product product) {
         productRep.add(product);
     }

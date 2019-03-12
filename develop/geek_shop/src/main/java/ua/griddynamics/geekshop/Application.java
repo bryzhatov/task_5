@@ -103,11 +103,4 @@ public class Application {
             }
         }
     }
-
-    private static void add(ProductService productService) {
-        for (int i = 1006; i < 10000; i++) {
-            productService.add(new Product(i, new Random().nextInt(10), "Phone" + i, 2, "/static/img/default.png",
-                    new BigDecimal(100 + new Random().nextInt(10000)), "No description", 1 + new Random().nextInt(2)));
-        }
-    }
 }

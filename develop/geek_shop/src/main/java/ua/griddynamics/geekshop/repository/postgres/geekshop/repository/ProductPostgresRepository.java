@@ -51,6 +51,12 @@ public class ProductPostgresRepository implements ProductRepository {
     }
 
     @Override
+    public List<Product> get(List<String> conditions) {
+        String sqlconditionsBuilder;
+        return null;
+    }
+
+    @Override
     public Product get(int id) {
         try (Connection connection = connectionSupplier.get()) {
 

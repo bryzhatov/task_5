@@ -1,7 +1,6 @@
 package ua.griddynamics.geekshop.repository.api;
 
 import ua.griddynamics.geekshop.entity.Product;
-import ua.griddynamics.geekshop.exception.DataBaseException;
 
 import java.util.List;
 
@@ -11,6 +10,10 @@ import java.util.List;
  */
 public interface ProductRepository {
     List<Product> get(int rating, int count);
+
+    List<Product> get(List<String> conditions);
+
     Product get(int id);
+
     void add(Product product);
 }

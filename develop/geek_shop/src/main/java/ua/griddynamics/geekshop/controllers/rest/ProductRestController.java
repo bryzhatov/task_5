@@ -29,9 +29,11 @@ public class ProductRestController {
     public void getProductsByRating(HttpRequest request, HttpResponse response) {
         String ratingStr = request.getParameter("rating");
         String countStr = request.getParameter("count");
+        String categoryIdStr = request.getParameter("categoryId");
 
         int rating = ratingStr != null ? Integer.valueOf(ratingStr) : 0;
         int count = countStr != null ? Integer.valueOf(countStr) : 0;
+        int categoryId = categoryIdStr != null ? Integer.valueOf(categoryIdStr) : 0;
 
         response.write(converter.toJson(productService.get(rating, count)));
     }

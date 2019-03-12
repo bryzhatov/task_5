@@ -6,8 +6,13 @@
 
         <div class="item  col-xs-4 col-lg-4" hidden>
             <a href="/product/?id=" id="product_link">
-                <div class="thumbnail">
-                    <img class="group list-group-image" id="product_image" src="" style="width:250px; height:150px;"/>
+                <div class="thumbnail" style="border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.3);">
+                    <div style="width: 300px; height: 200px; position: relative">
+                        <div style="width: 90%; height: 90%; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; transform: translate(-50%, -50%); top: 50%; left: 50%;">
+                            <img class="group list-group-image" id="product_image" src="" style="max-width: none; min-width: auto; min-height: auto; height: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"/>
+                        </div>
+                    </div>
+
                     <div class="caption">
                         <h4 class="group inner list-group-item-heading" id="product_name">Product name</h4>
 
