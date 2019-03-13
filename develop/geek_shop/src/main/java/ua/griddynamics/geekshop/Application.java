@@ -2,6 +2,7 @@ package ua.griddynamics.geekshop;
 
 import lombok.extern.log4j.Log4j;
 import org.yaml.snakeyaml.Yaml;
+import redis.clients.jedis.Jedis;
 import ua.griddynamics.geekshop.controllers.page.PageController;
 import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
 import ua.griddynamics.geekshop.controllers.rest.ProductRestController;
@@ -37,6 +38,8 @@ import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
 @Log4j
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
+
+        Jedis jedis = new Jedis();
         Properties properties = getProperties();
 
         // Configs, Connections

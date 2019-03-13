@@ -7,7 +7,6 @@ import java.util.Map;
  * @since 2019-02-13
  */
 public interface HttpRequest {
-
     String getUrl();
 
     String getLocation();
@@ -23,4 +22,6 @@ public interface HttpRequest {
     Map<String, String> getParametersUrl();
 
     String getPathInfo();
+
+    String getCookie(String key);
 }

@@ -17,6 +17,7 @@ import java.util.Map;
 public class Request implements HttpRequest {
     private final Map<String, String> parametersUrl = new HashMap<>();
     private final Map<String, String> headers = new HashMap<>();
+    private final Map<String, String> cookie = new HashMap<>();
     private final BufferedReader readerStream;
     private final BufferedWriter writerStream;
     private final Socket connection;
@@ -58,6 +59,15 @@ public class Request implements HttpRequest {
     @Override
     public String getHeader(String name) {
         return headers.get(name);
+    }
+
+    @Override
+    public Map<String, String> getCookie(String key) {
+        return cookie;
+    }
+
+    public void addCookie(String key, String value) {
+        cookie.put(key, value);
     }
 
     public void addHeader(String key, String value) {

@@ -21,7 +21,7 @@ public abstract class HttpTask implements Task {
         this.httpServer = httpServer;
     }
 
-    void closeConnection(Request request) {
+    protected void closeConnection(Request request) {
         try {
             request.getReaderStream().close();
             request.getWriterStream().close();

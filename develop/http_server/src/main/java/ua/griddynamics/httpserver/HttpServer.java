@@ -33,16 +33,16 @@ import static java.util.Comparator.comparingInt;
 @Data
 @Log4j
 public class HttpServer implements Server {
-    private final Map<String, Map<RequestMethods, Reaction>> reactionMap = new ConcurrentHashMap<>();
-    private final ReadWriteLock lockPatternMap = new ReentrantReadWriteLock(true);
-    private final RequestService requestService = new RequestService();
-    private final Map<String, Map<RequestMethods, Reaction>> patternMap =
+    protected final Map<String, Map<RequestMethods, Reaction>> reactionMap = new ConcurrentHashMap<>();
+    protected final ReadWriteLock lockPatternMap = new ReentrantReadWriteLock(true);
+    protected final RequestService requestService = new RequestService();
+    protected final Map<String, Map<RequestMethods, Reaction>> patternMap =
             new TreeMap<>(comparingInt(String::length).reversed());
-    private final ServerSocket socketServer = new ServerSocket();
-    private final ResponseService responseService;
-    private final HttpServerProperties propServer;
-    private final ThreadPool keepAliveThreadPool;
-    private final ThreadPool requestThreadPool;
+    protected final ServerSocket socketServer = new ServerSocket();
+    protected final ResponseService responseService;
+    protected final HttpServerProperties propServer;
+    protected final ThreadPool keepAliveThreadPool;
+    protected final ThreadPool requestThreadPool;
 
     public HttpServer(HttpServerConfig config) throws IOException {
         propServer = new HttpServerProperties(config);
@@ -67,6 +67,7 @@ public class HttpServer implements Server {
         } catch (IOException e) {
             log.error("Error deploy.", e);
         }
+
 
         while (!Thread.currentThread().isInterrupted()) {
             try {

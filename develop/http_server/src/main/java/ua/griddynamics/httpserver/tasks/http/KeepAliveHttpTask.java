@@ -13,8 +13,8 @@ import java.net.SocketException;
  */
 @Log4j
 public class KeepAliveHttpTask extends HttpTask {
-    private final HttpServer httpServer;
-    private final Request request;
+    protected final HttpServer httpServer;
+    protected final Request request;
 
     public KeepAliveHttpTask(HttpServer httpServer, Request request) {
         super(httpServer);

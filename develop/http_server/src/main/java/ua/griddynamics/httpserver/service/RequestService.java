@@ -26,6 +26,7 @@ public class RequestService {
         if (statusLine != null) {
             parseStatusLine(request, statusLine);
             parseHeadersRequest(request, request.getReaderStream());
+            parseCookie(request);
             parseBody(request, request.getReaderStream());
         } else {
             throw new SocketException("Client closed connection.");
@@ -53,8 +54,9 @@ public class RequestService {
         try {
             Map<String, String> headers = request.getHeaders();
             String lineHeader;
+
             while (!StringUtils.equals(lineHeader = streamRequest.readLine(), "")) {
-                String[] splitHeader = StringUtils.split(lineHeader, ":\\s");
+                String[] splitHeader = StringUtils.split(lineHeader, ": ");
                 headers.put(splitHeader[0].trim(), splitHeader[1].trim());
             }
         } catch (IOException e) {
@@ -73,6 +75,17 @@ public class RequestService {
 
         } catch (IOException e) {
             log.error("Can't parse body of request.", e);
+        }
+    }
+
+    private void parseCookie(Request request) {
+        String cookie = request.getHeaders().get("Cookie");
+        if (cookie != null) {
+            String[] cookieArray = StringUtils.split(cookie, "=");
+
+            for (int i = 0; i < cookieArray.length - 1; i++) {
+                request.addCookie(cookieArray[i], cookieArray[i + 1]);
+            }
         }
     }
 

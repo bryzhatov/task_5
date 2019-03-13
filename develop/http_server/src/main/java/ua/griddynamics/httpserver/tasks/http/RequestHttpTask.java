@@ -19,10 +19,10 @@ import java.util.concurrent.locks.Lock;
  */
 @Log4j
 public class RequestHttpTask extends HttpTask {
-    private final int emptyRequestTimeOut;
-    private final boolean serverKeepAlive;
-    private Socket connection;
-    private Request request;
+    protected final int emptyRequestTimeOut;
+    protected final boolean serverKeepAlive;
+    protected Socket connection;
+    protected Request request;
 
     private RequestHttpTask(HttpServer httpServer) {
         super(httpServer);
@@ -61,7 +61,7 @@ public class RequestHttpTask extends HttpTask {
             Response response = new Response(request);
             try {
 
-                executeReaction(response);
+                executeReaction(request, response);
 
             } catch (RuntimeException e) {
                 log.error("Client error", e);
@@ -90,7 +90,7 @@ public class RequestHttpTask extends HttpTask {
         }
     }
 
-    private void executeReaction(Response response) {
+    protected void executeReaction(Request request, Response response) {
         Reaction reaction = getReaction(request, request.getMethod());
 
         if (reaction != null) {
