@@ -1,8 +1,11 @@
 package ua.griddynamics.geekshop;
 
+import freemarker.template.TemplateException;
 import lombok.extern.log4j.Log4j;
 import org.yaml.snakeyaml.Yaml;
 import ua.griddynamics.geekshop.controllers.AuthController;
+import ua.griddynamics.geekshop.controllers.entity.GeekReaction;
+import ua.griddynamics.geekshop.controllers.entity.Model;
 import ua.griddynamics.geekshop.controllers.page.PageController;
 import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
 import ua.griddynamics.geekshop.controllers.rest.ProductRestController;
@@ -11,6 +14,7 @@ import ua.griddynamics.geekshop.repository.api.ProductRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.CategoryPostgresRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.ProductPostgresRepository;
+import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.geekshop.service.ProductService;
@@ -18,7 +22,9 @@ import ua.griddynamics.geekshop.util.config.AntonConfigAdapter;
 import ua.griddynamics.geekshop.util.json.converter.JsonConverter;
 import ua.griddynamics.geekshop.util.json.factory.JsonConverterFactory;
 import ua.griddynamics.httpserver.HttpServer;
+import ua.griddynamics.httpserver.api.controller.RequestMethods;
 import ua.griddynamics.httpserver.session.HashMapSessionManager;
+import ua.griddynamics.httpserver.session.api.Session;
 import ua.griddynamics.httpserver.session.api.SessionManager;
 import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
 
@@ -37,16 +43,16 @@ import static ua.griddynamics.httpserver.api.controller.RequestMethods.POST;
  */
 @Log4j
 public class Application {
+    private static TemplateEngine templateEngine = new FreemarkerTemplate("/web");
+    private static SessionManager sessionManager = new HashMapSessionManager();
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         Properties properties = getProperties();
 
         // Configs, Connections
         HttpServer httpServer = new HttpServer(AntonConfigAdapter.getConfig(properties));
-        FreemarkerTemplate freemarkerTemplate = new FreemarkerTemplate("/web");
         GeekShopConnectionProvider geekShopConnectionProvider = new GeekShopConnectionProvider(properties);
         JsonConverter jsonConverter = JsonConverterFactory.create("gson");
-        SessionManager sessionManager = new HashMapSessionManager();
 
         // Repositories
         CategoryRepository categoryRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
@@ -59,17 +65,18 @@ public class Application {
         // Controllers:
         CategoryRestController categoryRestController = new CategoryRestController(categoryService, jsonConverter);
         ProductRestController getProductsController = new ProductRestController(productService, jsonConverter);
-        PageController pageController = new PageController(categoryService, freemarkerTemplate, sessionManager);
+        PageController pageController = new PageController(categoryService, templateEngine, sessionManager);
         AuthController authController = new AuthController(sessionManager);
 
         // Reactions: Util
-        httpServer.addReaction("/auth", POST, authController::auth);
-        httpServer.addReaction("/login", GET, pageController::getLogin);
+        addReaction(httpServer, "/auth", POST, authController::auth);
+        addReaction(httpServer, "/login", GET, pageController::getLogin);
 
         // Reactions: Page
-        httpServer.addReaction("/", GET, pageController::getIndex);
-        httpServer.addReaction("/category/", GET, pageController::getCategory);
-        httpServer.addReaction("/product/", GET, pageController::getProduct);
+        addReaction(httpServer, "/", GET, pageController::getIndex);
+
+        addReaction(httpServer, "/category/", GET, pageController::getCategory);
+        addReaction(httpServer, "/product/", GET, pageController::getProduct);
 
         // Reactions: REST
         httpServer.addReaction("/v1/category/", GET, categoryRestController::getCategory);
@@ -80,6 +87,25 @@ public class Application {
         httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
 
         httpServer.deploy();
+    }
+
+    private static void addReaction(HttpServer server, String url, RequestMethods method, GeekReaction reaction) {
+        Model model = new Model();
+        server.addReaction(url, method, (request, response) -> {
+
+            String view = reaction.react(request, response, model);
+            try {
+
+                Session session = sessionManager.get(request.getCookie("sessionId"));
+                if (session != null) {
+                    model.add("session", session);
+                }
+
+                response.write(templateEngine.render(view, model));
+            } catch (TemplateException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private static Properties getProperties() {

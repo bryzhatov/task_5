@@ -1,18 +1,13 @@
 package ua.griddynamics.geekshop.controllers.page;
 
-import freemarker.template.TemplateException;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
-import ua.griddynamics.geekshop.entity.Category;
+import ua.griddynamics.geekshop.controllers.entity.Model;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
-import ua.griddynamics.httpserver.session.api.Session;
 import ua.griddynamics.httpserver.session.api.SessionManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Dmitry Bryzhatov
@@ -25,35 +20,19 @@ public class PageController {
     private CategoryService categoryService;
     private SessionManager sessionManager;
 
-    public PageController(CategoryService categoryService,
-                          TemplateEngine templateEngine,
+    public PageController(CategoryService categoryService, TemplateEngine templateEngine,
                           SessionManager sessionManager) {
         this.categoryService = categoryService;
         this.templateEngine = templateEngine;
         this.sessionManager = sessionManager;
     }
 
-    public void getIndex(HttpRequest request, HttpResponse response) {
-        try {
-            Map<String, Object> model = new HashMap<>();
-
-            if (request.getCookie("sessionId") != null) {
-                Session session = sessionManager.get(request.getCookie("sessionId"));
-                model.put("session", session);
-            }
-
-            response.addHeader("Content-Type", "text/html");
-
-            String page = templateEngine.render("/pages/index.html", model);
-            response.write(page);
-        } catch (TemplateException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+    public String getIndex(HttpRequest request, HttpResponse response, Model model) {
+        response.addHeader("Content-Type", "text/html");
+        return "/pages/index.html";
     }
 
-    public void getCategory(HttpRequest request, HttpResponse response) {
-        Map<String, String> model = new HashMap<>();
-
+    public String getCategory(HttpRequest request, HttpResponse response, Model model) {
         String idParam = request.getParameter("id");
         int id = 0;
 
@@ -61,14 +40,11 @@ public class PageController {
             id = Integer.valueOf(idParam);
         }
 
-        try {
-            response.write(templateEngine.render("/pages/category.html", categoryService.get(id)));
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        }
+        model.add("category", categoryService.get(id));
+        return "/pages/category.html";
     }
 
-    public void getProduct(HttpRequest request, HttpResponse response) {
+    public String getProduct(HttpRequest request, HttpResponse response, Model model) {
         String idParam = request.getParameter("id");
         int id = 0;
 
@@ -76,21 +52,11 @@ public class PageController {
             id = Integer.valueOf(idParam);
         }
 
-        try {
-            response.write(templateEngine.render(
-                    "/pages/product_info.html",
-                    new Category(id, "", 0)));
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        }
+        model.add("id", id);
+        return "/pages/product_info.html";
     }
 
-    public void getLogin(HttpRequest request, HttpResponse response) {
-        try {
-            response.write(templateEngine.render(
-                    "/pages/login.html"));
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        }
+    public String getLogin(HttpRequest request, HttpResponse response, Model model) {
+        return "/pages/login.html";
     }
 }
