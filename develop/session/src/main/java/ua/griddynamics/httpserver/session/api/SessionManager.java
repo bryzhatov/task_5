@@ -6,7 +6,7 @@ package ua.griddynamics.httpserver.session.api;
  */
 public interface SessionManager {
     void add(String id, Session session);
-    void add(String id, Session session, long seconds);
+    void add(String id, Session session, int seconds);
     Session get(String id);
     void invalidate(Session session);
 }

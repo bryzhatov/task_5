@@ -19,8 +19,8 @@ public class HashMapSessionManager implements SessionManager {
     }
 
     @Override
-    public void add(String id, Session session, long seconds) {
-        sessionHolder.put(id, session);
+    public void add(String id, Session session, int seconds) {
+
     }
 
     @Override
