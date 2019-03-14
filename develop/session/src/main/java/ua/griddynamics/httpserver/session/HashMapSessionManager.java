@@ -33,6 +33,6 @@ public class HashMapSessionManager implements SessionManager {
 
     @Override
     public void invalidate(Session session) {
-        sessionHolder.remove(session.getId());
+        sessionHolder.remove(1);
     }
 }
