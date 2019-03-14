@@ -5,15 +5,13 @@ package ua.griddynamics.httpserver.api;
  * @since 2019-02-13
  */
 public interface HttpResponse {
+    byte[] getBody();
+
     void write(String response);
 
     void write(byte[] response);
 
     void addHeader(String key, String value);
-
-    void addHeaderIfAbsent(String key, String value);
-
-    String getHeader(String key);
 
     void setStatus(int status);
 }

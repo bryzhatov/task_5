@@ -10,17 +10,17 @@ import ua.griddynamics.httpserver.session.api.SessionManager;
 public class RedisSessionManager implements SessionManager {
 
     @Override
-    public void add(Session session) {
+    public void add(String id, Session session) {
 
     }
 
     @Override
-    public void add(Session session, long seconds) {
+    public void add(String id, Session session, long seconds) {
 
     }
 
     @Override
-    public Session get(String key) {
+    public Session get(String id) {
         return null;
     }
 

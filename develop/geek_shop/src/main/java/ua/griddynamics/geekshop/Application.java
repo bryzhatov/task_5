@@ -2,11 +2,10 @@ package ua.griddynamics.geekshop;
 
 import lombok.extern.log4j.Log4j;
 import org.yaml.snakeyaml.Yaml;
-import redis.clients.jedis.Jedis;
+import ua.griddynamics.geekshop.controllers.AuthController;
 import ua.griddynamics.geekshop.controllers.page.PageController;
 import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
 import ua.griddynamics.geekshop.controllers.rest.ProductRestController;
-import ua.griddynamics.geekshop.entity.Product;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 import ua.griddynamics.geekshop.repository.api.ProductRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
@@ -19,17 +18,18 @@ import ua.griddynamics.geekshop.util.config.AntonConfigAdapter;
 import ua.griddynamics.geekshop.util.json.converter.JsonConverter;
 import ua.griddynamics.geekshop.util.json.factory.JsonConverterFactory;
 import ua.griddynamics.httpserver.HttpServer;
+import ua.griddynamics.httpserver.session.HashMapSessionManager;
+import ua.griddynamics.httpserver.session.api.SessionManager;
 import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 
 import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
+import static ua.griddynamics.httpserver.api.controller.RequestMethods.POST;
 
 /**
  * @author Dmitry Bryzhatov
@@ -37,9 +37,8 @@ import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
  */
 @Log4j
 public class Application {
-    public static void main(String[] args) throws IOException, URISyntaxException {
 
-        Jedis jedis = new Jedis();
+    public static void main(String[] args) throws IOException, URISyntaxException {
         Properties properties = getProperties();
 
         // Configs, Connections
@@ -47,6 +46,7 @@ public class Application {
         FreemarkerTemplate freemarkerTemplate = new FreemarkerTemplate("/web");
         GeekShopConnectionProvider geekShopConnectionProvider = new GeekShopConnectionProvider(properties);
         JsonConverter jsonConverter = JsonConverterFactory.create("gson");
+        SessionManager sessionManager = new HashMapSessionManager();
 
         // Repositories
         CategoryRepository categoryRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
@@ -56,12 +56,15 @@ public class Application {
         CategoryService categoryService = new CategoryService(categoryRepository);
         ProductService productService = new ProductService(productRepository);
 
-        // Controllers: REST
+        // Controllers:
         CategoryRestController categoryRestController = new CategoryRestController(categoryService, jsonConverter);
         ProductRestController getProductsController = new ProductRestController(productService, jsonConverter);
+        PageController pageController = new PageController(categoryService, freemarkerTemplate, sessionManager);
+        AuthController authController = new AuthController(sessionManager);
 
-        // Controllers: Page
-        PageController pageController = new PageController(categoryService, freemarkerTemplate);
+        // Reactions: Util
+        httpServer.addReaction("/auth", POST, authController::auth);
+        httpServer.addReaction("/login", GET, pageController::getLogin);
 
         // Reactions: Page
         httpServer.addReaction("/", GET, pageController::getIndex);

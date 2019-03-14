@@ -1,5 +1,6 @@
 package ua.griddynamics.geekshop.res.templates.ftl;
 
+import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -19,6 +20,18 @@ public class FreemarkerTemplate implements TemplateEngine {
     public FreemarkerTemplate(String templatePath) {
         cfg.setClassForTemplateLoading(getClass(), templatePath);
         cfg.setDefaultEncoding("UTF-8");
+    }
+
+    public String renderString(String str, Object value) throws IOException, TemplateException {
+        StringTemplateLoader stringLoader = new StringTemplateLoader();
+        cfg.setTemplateLoader(stringLoader);
+
+        StringWriter stringWriter = new StringWriter();
+        stringLoader.putTemplate("stringTemplate", str);
+        Template templateEngine = cfg.getTemplate("stringTemplate");
+        templateEngine.process(value, stringWriter);
+
+        return stringWriter.toString();
     }
 
     @Override

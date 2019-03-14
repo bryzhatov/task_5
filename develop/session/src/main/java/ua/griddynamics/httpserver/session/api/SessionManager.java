@@ -5,8 +5,8 @@ package ua.griddynamics.httpserver.session.api;
  * @since 2019-03-13
  */
 public interface SessionManager {
-    void add(Session session);
-    void add(Session session, long seconds);
-    Session get(String key);
+    void add(String id, Session session);
+    void add(String id, Session session, long seconds);
+    Session get(String id);
     void invalidate(Session session);
 }

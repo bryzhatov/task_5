@@ -62,8 +62,8 @@ public class Request implements HttpRequest {
     }
 
     @Override
-    public Map<String, String> getCookie(String key) {
-        return cookie;
+    public String getCookie(String key) {
+        return cookie.get(key);
     }
 
     public void addCookie(String key, String value) {

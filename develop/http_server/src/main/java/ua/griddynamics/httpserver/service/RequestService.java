@@ -9,6 +9,7 @@ import ua.griddynamics.httpserver.exception.ServerException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -56,7 +57,7 @@ public class RequestService {
             String lineHeader;
 
             while (!StringUtils.equals(lineHeader = streamRequest.readLine(), "")) {
-                String[] splitHeader = StringUtils.split(lineHeader, ": ");
+                String[] splitHeader = lineHeader.split(":\\s");
                 headers.put(splitHeader[0].trim(), splitHeader[1].trim());
             }
         } catch (IOException e) {
@@ -81,9 +82,9 @@ public class RequestService {
     private void parseCookie(Request request) {
         String cookie = request.getHeaders().get("Cookie");
         if (cookie != null) {
-            String[] cookieArray = StringUtils.split(cookie, "=");
+            String[] cookieArray = cookie.split("[=;\\s]+");
 
-            for (int i = 0; i < cookieArray.length - 1; i++) {
+            for (int i = 0; i < cookieArray.length - 1; i+=2) {
                 request.addCookie(cookieArray[i], cookieArray[i + 1]);
             }
         }
@@ -92,6 +93,7 @@ public class RequestService {
     private void clear(Request request) {
         request.getParametersUrl().clear();
         request.getHeaders().clear();
+        request.getCookie().clear();
         request.setLocation("");
         request.setPathInfo("");
         request.setMethod(null);

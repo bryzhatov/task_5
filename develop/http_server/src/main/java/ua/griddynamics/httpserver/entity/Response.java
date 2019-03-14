@@ -29,14 +29,8 @@ public class Response implements HttpResponse {
         headers.put(key, value);
     }
 
-    @Override
     public void addHeaderIfAbsent(String key, String value) {
         headers.putIfAbsent(key, value);
-    }
-
-    @Override
-    public String getHeader(String key) {
-        return headers.get(key);
     }
 
     @Override
@@ -53,6 +47,7 @@ public class Response implements HttpResponse {
         }
     }
 
+    @Override
     public byte[] getBody() {
         byte[] body = new byte[writer.size()];
         for (int i = 0; i < writer.size(); i++) {

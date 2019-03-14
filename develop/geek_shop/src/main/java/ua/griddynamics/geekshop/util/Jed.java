@@ -9,6 +9,5 @@ import redis.clients.jedis.Jedis;
 public class Jed {
     public static void main(String[] args) {
         Jedis jedis = new Jedis("localhost");
-        System.out.println(jedis.ping());
     }
 }
