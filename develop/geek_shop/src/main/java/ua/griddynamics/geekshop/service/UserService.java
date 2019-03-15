@@ -19,7 +19,6 @@ public class UserService {
     }
 
     public User get(String login, String password) {
-        System.out.println(login + " "+ password);
         return userRepository.get(login, password);
     }
 }

@@ -42,8 +42,8 @@ public class AuthController {
         if (user != null) {
             Session session = new Session();
             session.add("user", user);
-            sessionService.add("12312", session);
-            response.addHeader("Set-Cookie", "sessionId=12312");
+            sessionService.add(String.valueOf(user.hashCode()), session);
+            response.addHeader("Set-Cookie", "sessionId=" + user.hashCode());
         }
         return "/pages/index.html";
     }

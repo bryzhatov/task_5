@@ -10,7 +10,6 @@ import ua.griddynamics.geekshop.controllers.entity.Model;
 import ua.griddynamics.geekshop.controllers.page.PageController;
 import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
 import ua.griddynamics.geekshop.controllers.rest.ProductRestController;
-import ua.griddynamics.geekshop.entity.User;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 import ua.griddynamics.geekshop.repository.api.ProductRepository;
 import ua.griddynamics.geekshop.repository.api.UserRepository;
@@ -41,7 +40,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 
 import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
 import static ua.griddynamics.httpserver.api.controller.RequestMethods.POST;
@@ -142,8 +140,9 @@ public class Application {
                 if (session != null) {
                     model.add("session", session);
                 }
-
-                response.write(templateEngine.render(view, model));
+                if (view != null) {
+                    response.write(templateEngine.render(view, model));
+                }
             } catch (TemplateException e) {
                 throw new RuntimeException(e);
             }
