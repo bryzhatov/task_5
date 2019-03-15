@@ -8,5 +8,5 @@ public interface SessionService {
     void add(String id, Session session);
     void add(String id, Session session, int seconds);
     Session get(String id);
-    void invalidate(Session session);
+    void invalidate(String id);
 }

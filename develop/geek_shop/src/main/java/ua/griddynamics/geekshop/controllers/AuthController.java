@@ -29,12 +29,11 @@ public class AuthController {
             map.put(mass[i], mass[i + 1]);
         }
 
-        String login = map.get("login");
-        String password = map.get("password");
-
         Session session = new Session();
+        session.add("user", new User(1, "Dima", "Berbatov"));
+
         sessionService.add("12312", session);
-        session.add("user", new User(1, "Dima", "Bryzhatov"));
+
         response.addHeader("Set-Cookie", "sessionId=12312");
         return "/pages/index.html";
     }

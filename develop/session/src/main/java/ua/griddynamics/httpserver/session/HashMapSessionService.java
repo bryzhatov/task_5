@@ -20,19 +20,18 @@ public class HashMapSessionService implements SessionService {
 
     @Override
     public void add(String id, Session session, int seconds) {
-
     }
 
     @Override
     public Session get(String key) {
-        if(key != null){
+        if (key != null) {
             return sessionHolder.get(key);
         }
         return null;
     }
 
     @Override
-    public void invalidate(Session session) {
-        sessionHolder.remove(1);
+    public void invalidate(String id) {
+        sessionHolder.remove(id);
     }
 }

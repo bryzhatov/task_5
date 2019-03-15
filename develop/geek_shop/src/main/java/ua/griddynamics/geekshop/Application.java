@@ -88,15 +88,15 @@ public class Application {
     }
 
     private static void initRepositories() {
+        sessionRepository = new SessionRepositoryRedis(new Jedis("localhost"));
         productRepository = new ProductPostgresRepository(geekShopConnectionProvider);
         categoryRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
-//        sessionRepositoryRedis = new SessionRepositoryRedis(new Jedis("localhost"));
     }
 
     private static void initServices() {
         productService = new ProductService(productRepository);
         categoryService = new CategoryService(categoryRepository);
-        sessionService = new HashMapSessionService();
+        sessionService = new SessionServiceRedis(sessionRepository);
     }
 
     private static void initControllers() {

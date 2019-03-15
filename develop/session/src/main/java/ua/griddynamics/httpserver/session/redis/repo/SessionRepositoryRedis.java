@@ -32,4 +32,9 @@ public class SessionRepositoryRedis implements SessionRepository {
     public Session get(String id) {
         return gson.fromJson(jedis.get(id), Session.class);
     }
+
+    @Override
+    public void remove(String id) {
+        jedis.del(id);
+    }
 }

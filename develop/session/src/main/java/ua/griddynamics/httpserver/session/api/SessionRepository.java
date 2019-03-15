@@ -8,4 +8,5 @@ public interface SessionRepository {
     void add(String id, Session session);
     void add(String id, Session session, int seconds);
     Session get(String id);
+    void remove(String id);
 }
