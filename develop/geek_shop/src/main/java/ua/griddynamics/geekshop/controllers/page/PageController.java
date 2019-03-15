@@ -7,7 +7,7 @@ import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
-import ua.griddynamics.httpserver.session.api.SessionManager;
+import ua.griddynamics.httpserver.session.api.SessionService;
 
 /**
  * @author Dmitry Bryzhatov
@@ -18,13 +18,13 @@ import ua.griddynamics.httpserver.session.api.SessionManager;
 public class PageController {
     private TemplateEngine templateEngine;
     private CategoryService categoryService;
-    private SessionManager sessionManager;
+    private SessionService sessionService;
 
     public PageController(CategoryService categoryService, TemplateEngine templateEngine,
-                          SessionManager sessionManager) {
+                          SessionService sessionService) {
         this.categoryService = categoryService;
         this.templateEngine = templateEngine;
-        this.sessionManager = sessionManager;
+        this.sessionService = sessionService;
     }
 
     public String getIndex(HttpRequest request, HttpResponse response, Model model) {

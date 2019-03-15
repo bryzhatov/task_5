@@ -1,7 +1,7 @@
 package ua.griddynamics.httpserver.session;
 
 import ua.griddynamics.httpserver.session.api.Session;
-import ua.griddynamics.httpserver.session.api.SessionManager;
+import ua.griddynamics.httpserver.session.api.SessionService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Dmitry Bryzhatov
  * @since 2019-03-14
  */
-public class HashMapSessionManager implements SessionManager {
+public class HashMapSessionService implements SessionService {
     private final Map<String, Session> sessionHolder = new ConcurrentHashMap<>();
 
     @Override

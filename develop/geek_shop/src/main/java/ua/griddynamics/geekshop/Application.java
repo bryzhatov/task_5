@@ -3,6 +3,7 @@ package ua.griddynamics.geekshop;
 import freemarker.template.TemplateException;
 import lombok.extern.log4j.Log4j;
 import org.yaml.snakeyaml.Yaml;
+import redis.clients.jedis.Jedis;
 import ua.griddynamics.geekshop.controllers.AuthController;
 import ua.griddynamics.geekshop.controllers.entity.GeekReaction;
 import ua.griddynamics.geekshop.controllers.entity.Model;
@@ -23,9 +24,12 @@ import ua.griddynamics.geekshop.util.json.converter.JsonConverter;
 import ua.griddynamics.geekshop.util.json.factory.JsonConverterFactory;
 import ua.griddynamics.httpserver.HttpServer;
 import ua.griddynamics.httpserver.api.controller.RequestMethods;
-import ua.griddynamics.httpserver.session.HashMapSessionManager;
+import ua.griddynamics.httpserver.session.HashMapSessionService;
 import ua.griddynamics.httpserver.session.api.Session;
-import ua.griddynamics.httpserver.session.api.SessionManager;
+import ua.griddynamics.httpserver.session.api.SessionRepository;
+import ua.griddynamics.httpserver.session.api.SessionService;
+import ua.griddynamics.httpserver.session.redis.repo.SessionRepositoryRedis;
+import ua.griddynamics.httpserver.session.redis.service.SessionServiceRedis;
 import ua.griddynamics.httpserver.utils.controllers.StaticControllerFactory;
 
 import java.io.IOException;
@@ -43,60 +47,89 @@ import static ua.griddynamics.httpserver.api.controller.RequestMethods.POST;
  */
 @Log4j
 public class Application {
-    private static TemplateEngine templateEngine = new FreemarkerTemplate("/web");
-    private static SessionManager sessionManager = new HashMapSessionManager();
+    // Configs
+    private static GeekShopConnectionProvider geekShopConnectionProvider;
+    private static TemplateEngine templateEngine;
+    private static JsonConverter jsonConverter;
+    private static Properties properties;
+    private static HttpServer httpServer;
+    // Repositories
+    private static SessionRepository sessionRepositoryRedis;
+    private static CategoryRepository categoryRepository;
+    private static ProductRepository productRepository;
+    // Services
+    private static CategoryService categoryService;
+    private static ProductService productService;
+    private static SessionService sessionService;
+    // Controllers
+    private static CategoryRestController categoryRestController;
+    private static ProductRestController productsRestController;
+    private static PageController pageController;
+    private static AuthController authController;
+
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        Properties properties = getProperties();
-
-        // Configs, Connections
-        HttpServer httpServer = new HttpServer(AntonConfigAdapter.getConfig(properties));
-        GeekShopConnectionProvider geekShopConnectionProvider = new GeekShopConnectionProvider(properties);
-        JsonConverter jsonConverter = JsonConverterFactory.create("gson");
-
-        // Repositories
-        CategoryRepository categoryRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
-        ProductRepository productRepository = new ProductPostgresRepository(geekShopConnectionProvider);
-
-        // Services
-        CategoryService categoryService = new CategoryService(categoryRepository);
-        ProductService productService = new ProductService(productRepository);
-
-        // Controllers:
-        CategoryRestController categoryRestController = new CategoryRestController(categoryService, jsonConverter);
-        ProductRestController getProductsController = new ProductRestController(productService, jsonConverter);
-        PageController pageController = new PageController(categoryService, templateEngine, sessionManager);
-        AuthController authController = new AuthController(sessionManager);
-
-        // Reactions: Util
-        addReaction(httpServer, "/auth", POST, authController::auth);
-        addReaction(httpServer, "/login", GET, pageController::getLogin);
-
-        // Reactions: Page
-        addReaction(httpServer, "/", GET, pageController::getIndex);
-
-        addReaction(httpServer, "/category/", GET, pageController::getCategory);
-        addReaction(httpServer, "/product/", GET, pageController::getProduct);
-
-        // Reactions: REST
-        httpServer.addReaction("/v1/category/", GET, categoryRestController::getCategory);
-        httpServer.addReaction("/v1/categories/", GET, categoryRestController::getCategories);
-
-        httpServer.addReaction("/v1/products/", GET, getProductsController::getProductsByRating);
-        httpServer.addReaction("/v1/product/", GET, getProductsController::getProduct);
-        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
+        initConfigs();
+        initRepositories();
+        initServices();
+        initControllers();
+        initRestControllers();
 
         httpServer.deploy();
     }
 
+    private static void initConfigs() throws IOException {
+        properties = getProperties();
+        sessionService = new HashMapSessionService();
+        jsonConverter = JsonConverterFactory.create("gson");
+        templateEngine = new FreemarkerTemplate("/web");
+        httpServer = new HttpServer(AntonConfigAdapter.getConfig(properties));
+        geekShopConnectionProvider = new GeekShopConnectionProvider(properties);
+    }
+
+    private static void initRepositories() {
+        productRepository = new ProductPostgresRepository(geekShopConnectionProvider);
+        categoryRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
+//        sessionRepositoryRedis = new SessionRepositoryRedis(new Jedis("localhost"));
+    }
+
+    private static void initServices() {
+        productService = new ProductService(productRepository);
+        categoryService = new CategoryService(categoryRepository);
+        sessionService = new HashMapSessionService();
+    }
+
+    private static void initControllers() {
+        authController = new AuthController(sessionService);
+        pageController = new PageController(categoryService, templateEngine, sessionService);
+
+        addReaction(httpServer, "/", GET, pageController::getIndex);
+        addReaction(httpServer, "/auth", POST, authController::auth);
+        addReaction(httpServer, "/login", GET, pageController::getLogin);
+        addReaction(httpServer, "/product/", GET, pageController::getProduct);
+        addReaction(httpServer, "/category/", GET, pageController::getCategory);
+    }
+
+    private static void initRestControllers() throws URISyntaxException {
+        productsRestController = new ProductRestController(productService, jsonConverter);
+        categoryRestController = new CategoryRestController(categoryService, jsonConverter);
+
+        httpServer.addReaction("/v1/product/", GET, productsRestController::getProduct);
+        httpServer.addReaction("/v1/category/", GET, categoryRestController::getCategory);
+        httpServer.addReaction("/v1/categories/", GET, categoryRestController::getCategories);
+        httpServer.addReaction("/v1/products/", GET, productsRestController::getProductsByRating);
+        httpServer.addReaction("/static/*", GET, StaticControllerFactory.classpath("/web/static/"));
+    }
+
     private static void addReaction(HttpServer server, String url, RequestMethods method, GeekReaction reaction) {
         Model model = new Model();
+
         server.addReaction(url, method, (request, response) -> {
 
             String view = reaction.react(request, response, model);
             try {
 
-                Session session = sessionManager.get(request.getCookie("sessionId"));
+                Session session = sessionService.get(request.getCookie("sessionId"));
                 if (session != null) {
                     model.add("session", session);
                 }

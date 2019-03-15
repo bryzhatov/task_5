@@ -5,7 +5,7 @@ import ua.griddynamics.geekshop.entity.User;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.session.api.Session;
-import ua.griddynamics.httpserver.session.api.SessionManager;
+import ua.griddynamics.httpserver.session.api.SessionService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +15,10 @@ import java.util.Map;
  * @since 2019-03-13
  */
 public class AuthController {
-    private final SessionManager sessionManager;
+    private final SessionService sessionService;
 
-    public AuthController(SessionManager sessionManager) {
-        this.sessionManager = sessionManager;
+    public AuthController(SessionService sessionService) {
+        this.sessionService = sessionService;
     }
 
     public String auth(HttpRequest request, HttpResponse response, Model model) {
@@ -33,7 +33,7 @@ public class AuthController {
         String password = map.get("password");
 
         Session session = new Session();
-        sessionManager.add("12312", session);
+        sessionService.add("12312", session);
         session.add("user", new User(1, "Dima", "Bryzhatov"));
         response.addHeader("Set-Cookie", "sessionId=12312");
         return "/pages/index.html";
