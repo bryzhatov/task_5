@@ -3,10 +3,12 @@ package ua.griddynamics.geekshop.controllers.page;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import ua.griddynamics.geekshop.controllers.entity.Model;
+import ua.griddynamics.geekshop.entity.User;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
+import ua.griddynamics.httpserver.session.api.Session;
 import ua.griddynamics.httpserver.session.api.SessionService;
 
 /**
@@ -28,6 +30,16 @@ public class PageController {
     }
 
     public String getIndex(HttpRequest request, HttpResponse response, Model model) {
+        Session session = sessionService.get(request.getCookie("sessionId"));
+        if(session != null){
+            Object o = session.get("user");
+
+            if (o != null) {
+                User user = (User) o;
+                System.out.println(user);
+            }
+        }
+
         response.addHeader("Content-Type", "text/html");
         return "/pages/index.html";
     }

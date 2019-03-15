@@ -37,7 +37,6 @@ public class SessionRepositoryRedis implements SessionRepository {
         Session session = null;
         try {
             String jsonSession = jedis.get(id);
-
             if (jsonSession != null) {
                 session = gson.fromJson(jedis.get(id), Session.class);
                 String sessionJson = gson.toJson(session);

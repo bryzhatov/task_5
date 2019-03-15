@@ -129,14 +129,13 @@ public class Application {
     }
 
     private static void addReaction(HttpServer server, String url, RequestMethods method, GeekReaction reaction) {
-        Model model = new Model();
-
         server.addReaction(url, method, (request, response) -> {
-
+            Model model = new Model();
             String view = reaction.react(request, response, model);
             try {
 
                 Session session = sessionService.get(request.getCookie("sessionId"));
+
                 if (session != null) {
                     model.add("session", session);
                 }

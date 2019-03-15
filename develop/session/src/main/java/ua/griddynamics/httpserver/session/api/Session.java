@@ -1,6 +1,6 @@
 package ua.griddynamics.httpserver.session.api;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -10,12 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Dmitry Bryzhatov
  * @since 2019-03-13
  */
-@Data
 public class Session implements Serializable {
-    private Map<String, Meta> values = new ConcurrentHashMap<>();
+    @Getter
+    private Map<String, Object> values = new ConcurrentHashMap<>();
 
     public Object get(String key) {
-        return values.get(key);
+        return key != null ? values.get(key).getObject() : null;
     }
 
     public void add(String key, Object value) {

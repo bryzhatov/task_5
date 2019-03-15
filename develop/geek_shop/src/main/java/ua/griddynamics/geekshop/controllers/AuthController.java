@@ -18,8 +18,8 @@ import java.util.Map;
  */
 @Data
 public class AuthController {
-    private SessionService sessionService;
-    private UserService userService;
+    private final SessionService sessionService;
+    private final UserService userService;
 
     public AuthController(SessionService sessionService, UserService userService) {
         this.sessionService = sessionService;
@@ -42,8 +42,9 @@ public class AuthController {
         if (user != null) {
             Session session = new Session();
             session.add("user", user);
-            sessionService.add(String.valueOf(user.hashCode()), session);
-            response.addHeader("Set-Cookie", "sessionId=" + user.hashCode());
+            int hashCode = user.hashCode();
+            sessionService.add(String.valueOf(hashCode), session);
+            response.addHeader("Set-Cookie", "sessionId=" + hashCode);
         }
         return "/pages/index.html";
     }
