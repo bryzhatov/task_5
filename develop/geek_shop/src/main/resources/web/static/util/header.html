@@ -22,7 +22,7 @@
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
                 <#if session??>
-                        <li><a target="_blank" href="/login">${session.values.user.name} ${session.values.user.firstName}</a></li>
+                        <li><a target="_blank" href="/login">${session.values.user.object.name} ${session.values.user.object.surName}</a></li>
                     <#else>
                         <li><a target="_blank" href="/login">Sign In</a></li>
                 </#if>

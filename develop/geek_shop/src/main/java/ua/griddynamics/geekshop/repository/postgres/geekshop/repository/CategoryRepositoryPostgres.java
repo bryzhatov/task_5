@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
  * @author Dmitry Bryzhatov
  * @since 2019-02-20
  */
-public class CategoryPostgresRepository implements CategoryRepository {
+public class CategoryRepositoryPostgres implements CategoryRepository {
     private final Supplier<Connection> connectionSupplier;
 
-    public CategoryPostgresRepository(Supplier<Connection> connectionSupplier) {
+    public CategoryRepositoryPostgres(Supplier<Connection> connectionSupplier) {
         this.connectionSupplier = connectionSupplier;
     }
 

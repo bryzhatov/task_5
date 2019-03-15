@@ -1,7 +1,9 @@
 package ua.griddynamics.geekshop.controllers;
 
+import lombok.Data;
 import ua.griddynamics.geekshop.controllers.entity.Model;
 import ua.griddynamics.geekshop.entity.User;
+import ua.griddynamics.geekshop.service.UserService;
 import ua.griddynamics.httpserver.api.HttpRequest;
 import ua.griddynamics.httpserver.api.HttpResponse;
 import ua.griddynamics.httpserver.session.api.Session;
@@ -14,11 +16,14 @@ import java.util.Map;
  * @author Dmitry Bryzhatov
  * @since 2019-03-13
  */
+@Data
 public class AuthController {
-    private final SessionService sessionService;
+    private SessionService sessionService;
+    private UserService userService;
 
-    public AuthController(SessionService sessionService) {
+    public AuthController(SessionService sessionService, UserService userService) {
         this.sessionService = sessionService;
+        this.userService = userService;
     }
 
     public String auth(HttpRequest request, HttpResponse response, Model model) {
@@ -29,12 +34,17 @@ public class AuthController {
             map.put(mass[i], mass[i + 1]);
         }
 
-        Session session = new Session();
-        session.add("user", new User(1, "Dima", "Berbatov"));
+        String login = map.get("login");
+        String password = map.get("password");
 
-        sessionService.add("12312", session);
+        User user = userService.get(login, password);
 
-        response.addHeader("Set-Cookie", "sessionId=12312");
+        if (user != null) {
+            Session session = new Session();
+            session.add("user", user);
+            sessionService.add("12312", session);
+            response.addHeader("Set-Cookie", "sessionId=12312");
+        }
         return "/pages/index.html";
     }
 }

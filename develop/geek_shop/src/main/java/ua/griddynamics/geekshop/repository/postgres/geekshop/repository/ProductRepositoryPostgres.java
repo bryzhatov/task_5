@@ -18,10 +18,10 @@ import java.util.function.Supplier;
  * @author Dmitry Bryzhatov
  * @since 2019-03-04
  */
-public class ProductPostgresRepository implements ProductRepository {
+public class ProductRepositoryPostgres implements ProductRepository {
     private final Supplier<Connection> connectionSupplier;
 
-    public ProductPostgresRepository(Supplier<Connection> connectionSupplier) {
+    public ProductRepositoryPostgres(Supplier<Connection> connectionSupplier) {
         this.connectionSupplier = connectionSupplier;
     }
 

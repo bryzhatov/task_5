@@ -10,15 +10,19 @@ import ua.griddynamics.geekshop.controllers.entity.Model;
 import ua.griddynamics.geekshop.controllers.page.PageController;
 import ua.griddynamics.geekshop.controllers.rest.CategoryRestController;
 import ua.griddynamics.geekshop.controllers.rest.ProductRestController;
+import ua.griddynamics.geekshop.entity.User;
 import ua.griddynamics.geekshop.repository.api.CategoryRepository;
 import ua.griddynamics.geekshop.repository.api.ProductRepository;
+import ua.griddynamics.geekshop.repository.api.UserRepository;
 import ua.griddynamics.geekshop.repository.postgres.geekshop.GeekShopConnectionProvider;
-import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.CategoryPostgresRepository;
-import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.ProductPostgresRepository;
+import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.CategoryRepositoryPostgres;
+import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.ProductRepositoryPostgres;
+import ua.griddynamics.geekshop.repository.postgres.geekshop.repository.UserRepositoryPostgres;
 import ua.griddynamics.geekshop.res.templates.TemplateEngine;
 import ua.griddynamics.geekshop.res.templates.ftl.FreemarkerTemplate;
 import ua.griddynamics.geekshop.service.CategoryService;
 import ua.griddynamics.geekshop.service.ProductService;
+import ua.griddynamics.geekshop.service.UserService;
 import ua.griddynamics.geekshop.util.config.AntonConfigAdapter;
 import ua.griddynamics.geekshop.util.json.converter.JsonConverter;
 import ua.griddynamics.geekshop.util.json.factory.JsonConverterFactory;
@@ -37,6 +41,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
 import static ua.griddynamics.httpserver.api.controller.RequestMethods.GET;
 import static ua.griddynamics.httpserver.api.controller.RequestMethods.POST;
@@ -57,10 +62,12 @@ public class Application {
     private static CategoryRepository categoryRepository;
     private static ProductRepository productRepository;
     private static SessionRepository sessionRepository;
+    private static UserRepository userRepository;
     // Services
     private static CategoryService categoryService;
     private static ProductService productService;
     private static SessionService sessionService;
+    private static UserService userService;
     // Controllers
     private static CategoryRestController categoryRestController;
     private static ProductRestController productsRestController;
@@ -87,20 +94,22 @@ public class Application {
         geekShopConnectionProvider = new GeekShopConnectionProvider(properties);
     }
 
-    private static void initRepositories() {
+    private static void initRepositories() throws IOException {
+        userRepository = new UserRepositoryPostgres(geekShopConnectionProvider);
         sessionRepository = new SessionRepositoryRedis(new Jedis("localhost"));
-        productRepository = new ProductPostgresRepository(geekShopConnectionProvider);
-        categoryRepository = new CategoryPostgresRepository(geekShopConnectionProvider);
+        productRepository = new ProductRepositoryPostgres(geekShopConnectionProvider);
+        categoryRepository = new CategoryRepositoryPostgres(geekShopConnectionProvider);
     }
 
     private static void initServices() {
+        userService = new UserService(userRepository);
         productService = new ProductService(productRepository);
         categoryService = new CategoryService(categoryRepository);
         sessionService = new SessionServiceRedis(sessionRepository);
     }
 
     private static void initControllers() {
-        authController = new AuthController(sessionService);
+        authController = new AuthController(sessionService, userService);
         pageController = new PageController(categoryService, templateEngine, sessionService);
 
         addReaction(httpServer, "/", GET, pageController::getIndex);

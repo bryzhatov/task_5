@@ -15,5 +15,6 @@ public class User {
     @Setter(AccessLevel.NONE)
     private int id;
     private String name;
-    private String firstName;
+    private String surName;
+    private String password;
 }
