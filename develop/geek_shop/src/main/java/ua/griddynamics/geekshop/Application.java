@@ -54,9 +54,9 @@ public class Application {
     private static Properties properties;
     private static HttpServer httpServer;
     // Repositories
-    private static SessionRepository sessionRepositoryRedis;
     private static CategoryRepository categoryRepository;
     private static ProductRepository productRepository;
+    private static SessionRepository sessionRepository;
     // Services
     private static CategoryService categoryService;
     private static ProductService productService;
